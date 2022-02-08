@@ -122,6 +122,39 @@
         </div>
     </div>
 </div>
+<!-- The Pencil Modal -->
+<div id="myPencilModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Please enter incoming funds</h2>
+            <span class="pencil close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form action="{{ route('income-update') }}" method="post">
+                @csrf
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="inputDate" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="from">From</label>
+                    <input type="text" class="form-control" id="inputFrom" placeholder="Source of income" name="from" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" class="form-control" id="inputAmount" placeholder="Amount of income" min="0" name="amount" required>
+                    <small id="amountHelp" class="form-text text-muted">Numbers only</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Update income</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Close</button>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- Table with panel -->
 <div class="card card-cascade narrower">
 
@@ -200,20 +233,28 @@
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->from }}</td>
                         <td>
-                            {{$out = strlen( $value->description ) > 30 ? substr( $value->description ,0,30)." ..." :  $value->description }}
+                            {{ mb_strlen( $value->description ) > 30 ? mb_substr( $value->description ,0, 30) . " ..." :  $value->description }}
                         </td>
                         <td>{{ $value->amount }}</td>
                         <td>
-                            <div>
-                                <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
-                                    <i class="fas fa-pencil-alt mt-0"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
-                                    <i class="far fa-trash-alt mt-0"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
-                                    <i class="fas fa-info-circle mt-0"></i>
-                                </button>
+                            <div style="display: flex">
+                                <form action="{{ route('income-update', $value->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="myPencilBtn">
+                                        <i class="fas fa-pencil-alt mt-0"></i>
+                                    </button>
+                                </form>
+                                <form action="{{ route('income-delete', $value->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" id="{{$value->id}}">
+                                        <i class="far fa-trash-alt mt-0"></i>
+                                    </button>
+                                </form>
+{{--                                <form action="{{ route('income-delete', $value->id) }}">--}}
+{{--                                    <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">--}}
+{{--                                        <i class="fas fa-info-circle mt-0"></i>--}}
+{{--                                    </button>--}}
+{{--                                </form>--}}
                             </div>
                         </td>
                     </tr>
@@ -266,5 +307,57 @@
           }
         }
 </script>
+
+<script>
+    // Get the Pencil modal
+    var modal1 = document.getElementById("myPencilModal");
+
+    // Get the button that opens the modal
+    var btn3 = document.getElementById("myPencilBtn");
+
+    // Get the <span> element that closes the modal
+    var span1 = document.getElementsByClassName("pencil close")[0];
+    var btn2 = document.getElementById("closePencilBtn");
+
+    // When the user clicks on the button, open the modal
+    btn3.onclick = function() {
+        modal1.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span1.onclick = function() {
+        modal1.style.display = "none";
+    }
+
+    btn2.onclick = function() {
+        modal1.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal1.style.display = "none";
+        }
+    }
+</script>
+{{--<script>--}}
+
+{{--    $('.incomeDeleteButtons').click(function(){--}}
+{{--        let id = $(this).attr('id');--}}
+{{--        let route = '{{ route('income-delete') }}';--}}
+
+{{--        alert(route);--}}
+{{--        alert(id);--}}
+{{--        $.ajax({--}}
+{{--            type: 'Post',--}}
+{{--            url: route,--}}
+{{--            contentType: "application/json; charset=utf-8",--}}
+{{--            data: {id: id},--}}
+{{--            dataType: "json",--}}
+{{--            success: function() { alert('Success'); },--}}
+{{--            error: function() { alert('Error'); }--}}
+{{--        });--}}
+{{--    })--}}
+{{--</script>--}}
 </body>
 </html>

@@ -23,6 +23,8 @@ Route::get('/', function () {
 
 Route::get('/income', [IncomeController::class, 'income'])->name('income');
 Route::post('/income-insert', [IncomeController::class, 'incomeInsert'])->name('income-insert');
+Route::post('/income-delete/{id}', [IncomeController::class, 'incomeDelete'])->name('income-delete');
+Route::post('/income-update/{id}', [IncomeController::class, 'incomeUpdate'])->name('income-update');
 Route::get('/expense', [ExpenseController::class, 'expense'])->name('expense');
 Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
 Route::get('/home', [HomeController::class, 'home']);

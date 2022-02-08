@@ -10,8 +10,7 @@ class IncomeController extends BaseController
 {
     public function income()
     {
-        $incomes = Income::where('from', 'admin')->get();
-//        dd($incomes);
+        $incomes = Income::orderBy('created_at', 'DESC')->paginate(15);
         return view('income', ['incomes' => $incomes]);
     }
 
@@ -30,8 +29,26 @@ class IncomeController extends BaseController
             return $this->sendError($validator->errors()->first(),422);
         }
 
-        $incomes = Income::create($inputs)->get();
+        $incomes = Income::create($inputs)->orderBy('created_at', 'DESC')->paginate(15);
 
-        return view('income', ['incomes' => $incomes]);
+        return redirect()->route('income', ['incomes' => $incomes]);
+    }
+
+    public function incomeDelete($id)
+    {
+        $income = Income::find($id);
+        if (!$income)
+        {
+            return $this->sendError(['message' => 'Income with this id was not found'],422);
+        }
+        $income->delete();
+        $income->get();
+
+        return redirect()->route('income', ['incomes' => $income]);
+    }
+
+    public function incomeUpdate($id)
+    {
+        dd($id);
     }
 }

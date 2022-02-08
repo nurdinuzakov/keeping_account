@@ -18,7 +18,7 @@ class CreateIncomesTable extends Migration
             $table->date('date');
             $table->string('from');
             $table->text('description')->nullable();
-            $table->float('amount');
+            $table->double('amount');
             $table->timestamps();
         });
     }

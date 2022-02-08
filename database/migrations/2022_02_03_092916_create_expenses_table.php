@@ -19,7 +19,7 @@ class CreateExpensesTable extends Migration
             $table->text('description')->nullable();
             $table->string('category');
             $table->string('subcategory');
-            $table->float('amount');
+            $table->double('amount');
             $table->string('receipt_photo')->nullable();
             $table->timestamps();
         });
