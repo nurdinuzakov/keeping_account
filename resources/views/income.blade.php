@@ -133,20 +133,23 @@
             <form action="{{ route('income-update') }}" method="post">
                 @csrf
                 <div class="form-group">
+                    <input type="hidden" id="inputPencilId" name="inputPencilId" value="">
+                </div>
+                <div class="form-group">
                     <label for="date">Date</label>
-                    <input type="date" class="form-control" id="inputDate" name="date" required>
+                    <input type="date" class="form-control" id="inputPencilDate" name="date" value="" required>
                 </div>
                 <div class="form-group">
                     <label for="from">From</label>
-                    <input type="text" class="form-control" id="inputFrom" placeholder="Source of income" name="from" required>
+                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
+                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description" required>
                 </div>
                 <div class="form-group">
                     <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="inputAmount" placeholder="Amount of income" min="0" name="amount" required>
+                    <input type="number" class="form-control" id="inputPencilAmount" value="" min="0" name="amount" required>
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Update income</button>
@@ -225,6 +228,7 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($incomes as $value)
+{{--                    {{dd($value)}}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -238,12 +242,9 @@
                         <td>{{ $value->amount }}</td>
                         <td>
                             <div style="display: flex">
-                                <form action="{{ route('income-update', $value->id) }}" method="post">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="myPencilBtn">
-                                        <i class="fas fa-pencil-alt mt-0"></i>
-                                    </button>
-                                </form>
+                                <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
+                                    <i class="fas fa-pencil-alt mt-0"></i>
+                                </button>
                                 <form action="{{ route('income-delete', $value->id) }}" method="post">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" id="{{$value->id}}">
@@ -261,6 +262,39 @@
                 @endforeach
                 </tbody>
                 <!--Table body-->
+                <tfoot>
+                    <tr>
+                        <td>
+                            <input class="form-check-input" type="checkbox" id="checkbox1">
+                            <label class="form-check-label" for="checkbox1" class="label-table"></label>
+                        </td>
+                        <td>
+                            <a>Date
+                                <i class="fas fa-sort ml-1"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="">From
+                                <i class="fas fa-sort ml-1"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="">Description
+                                <i class="fas fa-sort ml-1"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="">Total Amount: bhkh
+
+                            </a>
+                        </td>
+                        <td>
+                            <a href="">Actions
+                                <i class="fas fa-sort ml-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
             <!--Table-->
         </div>
@@ -313,16 +347,16 @@
     var modal1 = document.getElementById("myPencilModal");
 
     // Get the button that opens the modal
-    var btn3 = document.getElementById("myPencilBtn");
+    var btn3 = document.getElementsByClassName("incomeUpdateButtons");
 
     // Get the <span> element that closes the modal
     var span1 = document.getElementsByClassName("pencil close")[0];
     var btn2 = document.getElementById("closePencilBtn");
 
     // When the user clicks on the button, open the modal
-    btn3.onclick = function() {
+    $('.incomeUpdateButtons').click(function(){
         modal1.style.display = "block";
-    }
+    })
 
     // When the user clicks on <span> (x), close the modal
     span1.onclick = function() {
@@ -340,24 +374,26 @@
         }
     }
 </script>
-{{--<script>--}}
+<script>
 
-{{--    $('.incomeDeleteButtons').click(function(){--}}
-{{--        let id = $(this).attr('id');--}}
-{{--        let route = '{{ route('income-delete') }}';--}}
+    $('.incomeUpdateButtons').click(function(){
+        let date = $(this).parents('tr').find('td:eq(0)').text();
+        let from = $(this).parents('tr').find('td:eq(1)').text();
+        let description = $(this).parents('tr').find('td:eq(2)').text();
+        let amount = $(this).parents('tr').find('td:eq(3)').text();
 
-{{--        alert(route);--}}
-{{--        alert(id);--}}
-{{--        $.ajax({--}}
-{{--            type: 'Post',--}}
-{{--            url: route,--}}
-{{--            contentType: "application/json; charset=utf-8",--}}
-{{--            data: {id: id},--}}
-{{--            dataType: "json",--}}
-{{--            success: function() { alert('Success'); },--}}
-{{--            error: function() { alert('Error'); }--}}
-{{--        });--}}
-{{--    })--}}
-{{--</script>--}}
+        $('#inputPencilId').val(this.id)
+        $('#inputPencilDate').val(date)
+        $('#inputPencilFrom').val(from)
+        $('#inputPencilDescription').val(description)
+        $('#inputPencilAmount').val(amount)
+
+        // let id = $(this).attr('id');
+        // let route = '';
+        //
+        // alert(route);
+        // alert(id);
+    })
+</script>
 </body>
 </html>

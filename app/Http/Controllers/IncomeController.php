@@ -47,8 +47,31 @@ class IncomeController extends BaseController
         return redirect()->route('income', ['incomes' => $income]);
     }
 
-    public function incomeUpdate($id)
+    public function incomeUpdate(Request $request)
     {
-        dd($id);
+        $inputs = $request->all();
+
+        $validator = Validator::make($inputs,[
+            'date'        => 'required|date',
+            'from'        => 'required|string',
+            'description' => 'required|string',
+            'amount'      => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first(),422);
+        }
+
+        $incomes = Income::all();
+        $income = $incomes->find($inputs['inputPencilId']);
+
+        $income->date = $inputs['date'];
+        $income->from = $inputs['from'];
+        $income->description = $inputs['description'];
+        $income->amount = $inputs['amount'];
+        $income->save();
+
+        $income->get();
+        return redirect()->route('income', ['incomes' => $incomes]);
     }
 }
