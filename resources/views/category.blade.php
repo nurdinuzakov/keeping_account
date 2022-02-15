@@ -7,9 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://mdbootstrap.com/docs/jquery/tables/additional/">
-
 
     <style>
         /* The Modal (background) */
@@ -93,46 +93,18 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Please enter incoming funds</h2>
+            <h2>Create new category</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('expense-insert') }}" method="post">
+            <form action="{{ route('category-create') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" class="form-control" id="inputDate" name="date" required>
+                    <label for="from">Category name</label>
+                    <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new category name" name="category_name" required>
                 </div>
-                <div class="form-group">
-                    <label for="from">Responsible person</label>
-                    <input type="text" class="form-control" id="inputResponsiblePerson" placeholder="Who made the expense" name="from" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Category</label>
-                    <select>
-                        <option>{{}}</option>
-                    </select>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="category" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="inputAmount" placeholder="Amount of income" min="0" name="amount" required>
-                    <small id="amountHelp" class="form-text text-muted">Numbers only</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Insert income</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Close</button>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Cancel</button>
             </form>
         </div>
     </div>
@@ -141,34 +113,18 @@
 <div id="myPencilModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Please enter incoming funds</h2>
+            <h2>Change the category</h2>
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('expense-update') }}" method="post">
+            <form action="{{ route('income-update') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <input type="hidden" id="inputPencilId" name="inputPencilId" value="">
-                </div>
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" class="form-control" id="inputPencilDate" name="date" value="" required>
-                </div>
-                <div class="form-group">
-                    <label for="from">From</label>
+                    <label for="from">Category name</label>
                     <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
                 </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="inputPencilAmount" value="" min="0" name="amount" required>
-                    <small id="amountHelp" class="form-text text-muted">Numbers only</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Update income</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Close</button>
+                <button type="submit" class="btn btn-primary">Update category</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Cancel</button>
             </form>
         </div>
     </div>
@@ -189,14 +145,12 @@
             </button>
         </div>
 
-        <a href="" class="white-text mx-3">Expense table</a>
+        <a href="" class="white-text mx-3">Category table</a>
 
         <div>
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Create expense</button>
+            <button class="btn btn-primary" id="myBtn">Create category</button>
         </div>
-
-
     </div>
     <!--/Card image-->
 
@@ -209,37 +163,13 @@
                 <!--Table head-->
                 <thead>
                 <tr>
-                    <th>
-                        <input class="form-check-input" type="checkbox" id="checkbox">
-                        <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
-                    </th>
                     <th class="th-lg">
-                        <a>Date
+                        <a>Category Id
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Responsible person
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
-                    </th>
-                    <th class="th-lg">
-                        <a href="">Category
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
-                    </th>
-                    <th class="th-lg">
-                        <a href="">Category item
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
-                    </th>
-                    <th class="th-lg">
-                        <a href="">Expense amount
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
-                    </th>
-                    <th class="th-lg">
-                        <a href="">Comments
+                        <a href="">Category name
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -254,35 +184,22 @@
 
                 <!--Table body-->
                 <tbody>
-                @foreach($expenses as $value)
-{{--                    {{dd($expenses)}}--}}
+                @foreach($categories as $value)
                     <tr>
-                        <th scope="row">
-                            <input class="form-check-input" type="checkbox" id="checkbox1">
-                            <label class="form-check-label" for="checkbox1" class="label-table"></label>
-                        </th>
-                        <td>{{ $value->date }}</td>
-                        <td>{{ $value->responsible_person }}</td>
-                        <td>{{ $value->category }}</td>
-                        <td>{{ $value->category_item }}</td>
-                        <td>{{ $value->expense_amount }}</td>
-                        <td>
-                            {{$out = strlen( $value->comments ) > 30 ? substr( $value->comments ,0,30)." ..." :  $value->comments }}
-                        </td>
+                        <td>{{ $value->id }}</td>
+                        <form action="{{ route('category-item', $value->id) }}" method="post">
+                            @csrf
+                            <td><button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2"><a><h4>{{ $value->name }}</h4></a></button></td>
+                        </form>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
                                     <i class="fas fa-pencil-alt mt-0"></i>
                                 </button>
-                                <form action="{{ route('expense-delete', $value->id) }}" method="post">
+                                <form action="{{ route('category-delete', $value->id) }}" method="post">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">
                                         <i class="far fa-trash-alt mt-0"></i>
-                                    </button>
-                                </form>
-                                <form action="">
-                                    <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
-                                        <i class="fas fa-info-circle mt-0" src="{{ $value->receipt_photo }}"></i>
                                     </button>
                                 </form>
                             </div>
@@ -291,6 +208,21 @@
                 @endforeach
                 </tbody>
                 <!--Table body-->
+                <tfoot>
+                <tr>
+                    <td>
+                        <a>Category Id</a>
+                    </td>
+                    <td>
+                        <div class="pagination-wrapper">
+                            {{ $categories->links() }}
+                        </div>
+                    </td>
+                    <td>
+                        <a href="">Actions</a>
+                    </td>
+                </tr>
+                </tfoot>
             </table>
             <!--Table-->
         </div>
@@ -328,6 +260,7 @@
 
     btn1.onclick = function() {
         modal.style.display = "none";
+        $(this).parents().find('.form-control').val("");
     }
 
     // When the user clicks anywhere outside of the modal, close it
@@ -361,6 +294,7 @@
 
     btn2.onclick = function() {
         modal1.style.display = "none";
+        $(this).parents().find('.form-control').val("");
     }
 
     // When the user clicks anywhere outside of the modal, close it

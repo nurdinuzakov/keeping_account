@@ -10,8 +10,11 @@ class IncomeController extends BaseController
 {
     public function income()
     {
-        $incomes = Income::orderBy('created_at', 'DESC')->paginate(15);
-        return view('income', ['incomes' => $incomes]);
+        $income = Income::orderBy('created_at', 'DESC');
+        $total = $income->pluck('amount');
+        $incomes = $income->paginate(15);
+        $totalSum = $total->sum();
+        return view('income', ['incomes' => $incomes, 'total' => $totalSum]);
     }
 
     public function incomeInsert(Request $request)

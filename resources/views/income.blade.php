@@ -228,7 +228,6 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($incomes as $value)
-{{--                    {{dd($value)}}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -236,9 +235,7 @@
                         </th>
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->from }}</td>
-                        <td>
-                            {{ mb_strlen( $value->description ) > 30 ? mb_substr( $value->description ,0, 30) . " ..." :  $value->description }}
-                        </td>
+                        <td>{{ mb_strlen( $value->description ) > 30 ? mb_substr($value->description ,0, 30) . " ..." :  $value->description }}</td>
                         <td>{{ $value->amount }}</td>
                         <td>
                             <div style="display: flex">
@@ -247,7 +244,7 @@
                                 </button>
                                 <form action="{{ route('income-delete', $value->id) }}" method="post">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" id="{{$value->id}}">
+                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">
                                         <i class="far fa-trash-alt mt-0"></i>
                                     </button>
                                 </form>
@@ -279,14 +276,18 @@
                             </a>
                         </td>
                         <td>
-                            <a href="">Description
-                                <i class="fas fa-sort ml-1"></i>
-                            </a>
+                            <div class="pagination-wrapper">
+                                {{ $incomes->links() }}
+                            </div>
+{{--                            <a href="">Description--}}
+{{--                                <i class="fas fa-sort ml-1"></i>--}}
+{{--                            </a>--}}
                         </td>
                         <td>
-                            <a href="">Total Amount: bhkh
+                            <h5>Total amount: {{$total}}</h5>
+{{--                            <a href="">Total Amount: {{$total}}--}}
 
-                            </a>
+{{--                            </a>--}}
                         </td>
                         <td>
                             <a href="">Actions
@@ -394,6 +395,17 @@
         // alert(route);
         // alert(id);
     })
+</script>
+
+<script>
+    function myFunction() {
+        const answer = confirm("Do you really want to delete this item?");
+        if (!answer){
+            alert('Item deletion was canceled!');
+        }else{
+            alert('Item successfully deleted!')
+        }
+    }
 </script>
 </body>
 </html>
