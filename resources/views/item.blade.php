@@ -101,7 +101,6 @@
                 @csrf
                 <div class="form-group">
                     <label for="from">Item name</label>
-                    <input type="hidden" value="">
                     <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new item name" name="item_name" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Create</button>
@@ -114,34 +113,19 @@
 <div id="myPencilModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Please enter new category</h2>
+            <h2>Update item</h2>
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('income-update') }}" method="post">
+            <form action="{{ route('update-item') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <input type="hidden" id="inputPencilId" name="inputPencilId" value="">
+                    <label for="from">Item name</label>
+                    <input type="hidden" id="hiddenPencil" name="item_id" value="">
+                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="item_name" required>
                 </div>
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" class="form-control" id="inputPencilDate" name="date" value="" required>
-                </div>
-                <div class="form-group">
-                    <label for="from">From</label>
-                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="inputPencilAmount" value="" min="0" name="amount" required>
-                    <small id="amountHelp" class="form-text text-muted">Numbers only</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Update income</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Cancel</button>
             </form>
         </div>
     </div>
@@ -154,7 +138,7 @@
         class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center">
 
         <div>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
@@ -210,7 +194,7 @@
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
                                     <i class="fas fa-pencil-alt mt-0"></i>
                                 </button>
-                                <form action="{{ route('category-delete', $value->id) }}" method="post">
+                                <form action="{{ route('category-item-delete', $value->id) }}" method="post">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">
                                         <i class="far fa-trash-alt mt-0"></i>
@@ -325,22 +309,10 @@
 <script>
 
     $('.incomeUpdateButtons').click(function(){
-        let date = $(this).parents('tr').find('td:eq(0)').text();
         let from = $(this).parents('tr').find('td:eq(1)').text();
-        let description = $(this).parents('tr').find('td:eq(2)').text();
-        let amount = $(this).parents('tr').find('td:eq(3)').text();
 
-        $('#inputPencilId').val(this.id)
-        $('#inputPencilDate').val(date)
+        $('#hiddenPencil').val(this.id)
         $('#inputPencilFrom').val(from)
-        $('#inputPencilDescription').val(description)
-        $('#inputPencilAmount').val(amount)
-
-        // let id = $(this).attr('id');
-        // let route = '';
-        //
-        // alert(route);
-        // alert(id);
     })
 </script>
 

@@ -117,13 +117,14 @@
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('income-update') }}" method="post">
+            <form action="{{ route('category-update') }}" method="post">
                 @csrf
                 <div class="form-group">
                     <label for="from">Category name</label>
-                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
+                    <input type="hidden" id="hiddenPencil" name="category_id" value="">
+                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="category_name" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Update category</button>
+                <button type="submit" class="btn btn-primary">Update</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Cancel</button>
             </form>
         </div>
@@ -137,7 +138,7 @@
         class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center">
 
         <div>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
@@ -307,22 +308,10 @@
 <script>
 
     $('.incomeUpdateButtons').click(function(){
-        let date = $(this).parents('tr').find('td:eq(0)').text();
         let from = $(this).parents('tr').find('td:eq(1)').text();
-        let description = $(this).parents('tr').find('td:eq(2)').text();
-        let amount = $(this).parents('tr').find('td:eq(3)').text();
 
-        $('#inputPencilId').val(this.id)
-        $('#inputPencilDate').val(date)
+        $('#hiddenPencil').val(this.id)
         $('#inputPencilFrom').val(from)
-        $('#inputPencilDescription').val(description)
-        $('#inputPencilAmount').val(amount)
-
-        // let id = $(this).attr('id');
-        // let route = '';
-        //
-        // alert(route);
-        // alert(id);
     })
 </script>
 

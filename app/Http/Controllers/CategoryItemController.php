@@ -33,8 +33,42 @@ class CategoryItemController extends BaseController
         return redirect()->route('category-item', ['categoryItem' => $item, 'id' => $id]);
     }
 
-    public function categoryItemDelete()
+    public function updateItem(Request $request)
     {
-        dd('in');
+        $inputs = $request->all();
+
+        $validator = Validator::make($inputs,[
+            'item_name'        => 'required|string',
+            'item_id'        => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first(),422);
+        }
+
+        $item = CategoryItem::find($inputs['item_id']);
+        $item->name = $inputs['item_name'];
+        $item->save();
+        $id = $item->category_id;
+
+        $categoryItem = CategoryItem::where('category_id', $id)->get();
+        return view('item', ['categoryItem' => $categoryItem, 'id' => $id]);
+    }
+
+    public function categoryItemDelete($id)
+    {
+        $categoryItem = CategoryItem::find($id);
+
+        if (!$categoryItem)
+        {
+            return $this->sendError(['message' => 'Item with this id was not found'],422);
+        }
+
+
+        $categoryItem->delete();
+        $categoryItem->get();
+        $id = $categoryItem->category_id;
+
+        return redirect()->route('category-item', ['categoryItem' => $categoryItem, 'id' => $id]);
     }
 }

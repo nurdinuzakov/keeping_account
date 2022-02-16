@@ -33,6 +33,28 @@ class CategoryController extends Controller
         return redirect()->route('categories', ['categories' => $category]);
     }
 
+    public function categoryUpdate(Request  $request)
+    {
+        $inputs = $request->all();
+
+        $validator = Validator::make($inputs,[
+            'category_name'        => 'required|string',
+            'category_id'        => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first(),422);
+        }
+
+        $categories = Category::all();
+        $category = $categories->find($inputs['category_id']);
+
+        $category->name = $inputs['category_name'];
+        $category->save();
+
+        return redirect()->route('categories', ['categories' => $category]);
+    }
+
     public function categoryDelete($id)
     {
         $category = Category::find($id);

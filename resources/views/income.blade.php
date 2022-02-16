@@ -166,7 +166,7 @@
         class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center">
 
         <div>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">

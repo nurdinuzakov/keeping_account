@@ -3,6 +3,7 @@
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CategoryItemController;
+use App\Http\Controllers\DataController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
@@ -37,13 +38,15 @@ Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
 
 Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
 Route::post('/category-create', [CategoryController::class, 'categoryCreate'])->name('category-create');
+Route::post('/category-update', [CategoryController::class, 'categoryUpdate'])->name('category-update');
 Route::post('/category-delete/{id}', [CategoryController::class, 'categoryDelete'])->name('category-delete');
 
-Route::get('/category-item/{id}', [CategoryItemController::class, 'categoryItem'])->name('category-item');
-Route::post('/category-item/{id}', [CategoryItemController::class, 'categoryItem'])->name('category-item');
+Route::match(['get', 'post'], '/category-item/{id}', [CategoryItemController::class, 'categoryItem'])->name('category-item');
 Route::post('/category-item-create/{id}', [CategoryItemController::class, 'createItem'])->name('create-item');
-Route::post('/category-item-delete', [CategoryItemController::class, 'categoryItemDelete'])->name('category-item-delete');
+Route::post('/category-item-update', [CategoryItemController::class, 'updateItem'])->name('update-item');
+Route::post('/category-item-delete/{id}', [CategoryItemController::class, 'categoryItemDelete'])->name('category-item-delete');
 
+Route::get('/home', [HomeController::class, 'home'])->name('home');
 
+Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
 
-Route::get('/home', [HomeController::class, 'home']);

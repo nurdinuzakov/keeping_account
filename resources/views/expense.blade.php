@@ -93,7 +93,7 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Please enter incoming funds</h2>
+            <h2>Please enter expenses you made</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
@@ -105,33 +105,33 @@
                 </div>
                 <div class="form-group">
                     <label for="from">Responsible person</label>
-                    <input type="text" class="form-control" id="inputResponsiblePerson" placeholder="Who made the expense" name="from" required>
+                    <input type="text" class="form-control" id="inputResponsiblePerson" placeholder="Who made the expense" name="responsible_person" required>
                 </div>
                 <div class="form-group">
-                    <label for="description">Category</label>
-                    <select>
-                        <option>{{}}</option>
+                    <label for="category">Categories: </label>
+                    <select name="category" id="category" class="form-control" style="width:250px">
+                            <option value="">--- Select category ---</option>
+                        @foreach($categories as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
                     </select>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="category" required>
+
+                    <label for="items">Items: </label>
+                    <select name="item" id="item" class="form-control" style="width:250px">
+                        <option>--- Select item ---</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="inputAmount" placeholder="Amount of income" min="0" name="amount" required>
+                    <label for="amount">Expense amount</label>
+                    <input type="number" class="form-control" id="expense_amount" placeholder="Expense amount" min="0" name="expense_amount" required>
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Insert income</button>
+                <div class="form-group">
+                    <label for="description">Comments</label>
+                    <input type="text" class="form-control" id="expenseDescription" placeholder="Expense type" name="comments">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Insert expense</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Close</button>
             </form>
         </div>
@@ -181,7 +181,7 @@
         class="view view-cascade gradient-card-header blue-gradient narrower py-2 mx-4 mb-3 d-flex justify-content-between align-items-center">
 
         <div>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
@@ -251,11 +251,10 @@
                 </tr>
                 </thead>
                 <!--Table head-->
-
+{{--                {{dd($categories)}}--}}
                 <!--Table body-->
                 <tbody>
                 @foreach($expenses as $value)
-{{--                    {{dd($expenses)}}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -390,6 +389,36 @@
         // alert(route);
         // alert(id);
     })
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function ()
+    {
+        jQuery('select[name="category"]').on('change',function(){
+            var categoryID = jQuery(this).val();
+
+            if(categoryID)
+            {
+                jQuery.ajax({
+                    url : '/get-categories/getitems/' +categoryID,
+                    type : "GET",
+                    dataType : "json",
+                    success:function(data)
+                    {
+                        console.log(data);
+                        jQuery('select[name="item"]').empty();
+                        jQuery.each(data, function(key,value){
+                            $('select[name="item"]').append('<option value="'+ key +'">'+ value +'</option>');
+                        });
+                    }
+                });
+            }
+            else
+            {
+                $('select[name="item"]').empty();
+            }
+        });
+    });
 </script>
 
 <script>
