@@ -17,4 +17,14 @@ class Expense extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function category()
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function item()
+    {
+        return $this->hasMany(CategoryItem::class);
+    }
 }

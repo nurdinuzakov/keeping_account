@@ -17,4 +17,9 @@ class CategoryItem extends Model
     {
         return $this->HasOne(Category::class);
     }
+
+    public function expenses()
+    {
+        return $this->HasOne(Expense::class);
+    }
 }

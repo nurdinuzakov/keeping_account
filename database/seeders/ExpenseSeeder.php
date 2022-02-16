@@ -19,8 +19,8 @@ class ExpenseSeeder extends Seeder
             DB::table('expenses')->insert([
                 'date' => new \DateTime(),
                 'responsible_person' => 'admin',
-                'category' => 'food',
-                'category_item' => 'sahar',
+                'category_id' => rand(0, 10),
+                'item_id' => rand(0, 10),
                 'expense_amount' => rand(0, 99999),
                 'comments' => Str::random(100),
                 'receipt_photo' => Str::random(100),

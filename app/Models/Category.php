@@ -17,4 +17,9 @@ class Category extends Model
     {
         return $this->HasMany(CategoryItem::class);
     }
+
+    public function expenses()
+    {
+        return $this->HasOne(Expense::class);
+    }
 }

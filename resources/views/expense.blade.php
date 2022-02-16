@@ -109,7 +109,7 @@
                 </div>
                 <div class="form-group">
                     <label for="category">Categories: </label>
-                    <select name="category" id="category" class="form-control" style="width:250px">
+                    <select name="category_id" id="category" class="form-control" style="width:250px">
                             <option value="">--- Select category ---</option>
                         @foreach($categories as $key => $name)
                             <option value="{{ $key }}">{{ $name }}</option>
@@ -117,7 +117,7 @@
                     </select>
 
                     <label for="items">Items: </label>
-                    <select name="item" id="item" class="form-control" style="width:250px">
+                    <select name="item_id" id="item" class="form-control" style="width:250px">
                         <option>--- Select item ---</option>
                     </select>
                 </div>
@@ -255,6 +255,7 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($expenses as $value)
+                    {{dd($expenses)}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">

@@ -13,7 +13,9 @@ class ExpenseController extends BaseController
     public function expense()
     {
         $categories = Category::pluck("name","id");
-        $expense = Expense::orderBy('created_at', 'DESC');
+        $expense = Expense::with('category', 'item')->get();
+//            ->orderBy('created_at', 'DESC');
+        dd($expense);
         $total = $expense->pluck('expense_amount');
         $expenses = $expense->paginate(15);
         $totalSum = $total->sum();
@@ -28,8 +30,8 @@ class ExpenseController extends BaseController
         $validator = Validator::make($inputs,[
             'date'                     => 'required|date',
             'responsible_person'        => 'required|string',
-            'category'                 => 'required|numeric',
-            'item'                 => 'required|numeric',
+            'category_id'                 => 'required|numeric',
+            'item_id'                 => 'required|numeric',
             'expense_amount'      => 'required|numeric'
         ]);
 
