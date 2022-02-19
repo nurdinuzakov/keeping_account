@@ -19,7 +19,7 @@
             z-index: 1; /* Sit on top */
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
+            width: 90%; /* Full width */
             height: 100%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
             background-color: rgb(0,0,0); /* Fallback color */
@@ -118,7 +118,7 @@
 
                     <label for="items">Items: </label>
                     <select name="item_id" id="item" class="form-control" style="width:250px">
-                        <option>--- Select item ---</option>
+                        <option value="">--- Select item ---</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -155,18 +155,35 @@
                     <input type="date" class="form-control" id="inputPencilDate" name="date" value="" required>
                 </div>
                 <div class="form-group">
-                    <label for="from">From</label>
+                    <label for="from">Responsible person</label>
                     <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description" required>
+                    <label for="category">Categories: </label>
+                    <select name="category_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select category ---</option>
+                        @foreach($categories as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+
+                    <label for="items">Items: </label>
+                    <select name="item_id" id="item" class="form-control" style="width:250px">
+                        <option value="">--- Select item ---</option>
+                    </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="amount">Amount</label>
+                    <label for="amount">Expense amount</label>
                     <input type="number" class="form-control" id="inputPencilAmount" value="" min="0" name="amount" required>
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
+
+                <div class="form-group">
+                    <label for="description">Comments</label>
+                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description">
+                </div>
+
                 <button type="submit" class="btn btn-primary">Update income</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Close</button>
             </form>
@@ -184,9 +201,11 @@
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('income') }}';">
                 <i class="fas fa-columns mt-0"></i>
             </button>
+
+            <a href="" class="white-text mx-3">Balance: {{ $balance }}</a>
         </div>
 
         <a href="" class="white-text mx-3">Expense table</a>
@@ -219,9 +238,7 @@
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Responsible person
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Responsible person</a>
                     </th>
                     <th class="th-lg">
                         <a href="">Category
@@ -229,7 +246,7 @@
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Category item
+                        <a href="">Item
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -255,7 +272,6 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($expenses as $value)
-                    {{dd($expenses)}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -263,12 +279,10 @@
                         </th>
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->responsible_person }}</td>
-                        <td>{{ $value->category }}</td>
-                        <td>{{ $value->category_item }}</td>
+                        <td data-id="">{{ $value->category ? $value->category->name : null }}</td>
+                        <td>{{ $value->item ? $value->item->name : null }}</td>
                         <td>{{ $value->expense_amount }}</td>
-                        <td>
-                            {{$out = strlen( $value->comments ) > 30 ? substr( $value->comments ,0,30)." ..." :  $value->comments }}
-                        </td>
+                        <td>{{$out = strlen( $value->comments ) > 30 ? substr( $value->comments ,0,30)." ..." :  $value->comments }}</td>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
@@ -291,10 +305,41 @@
                 @endforeach
                 </tbody>
                 <!--Table body-->
+                <tfoot>
+                <tr>
+                    <td>
+                        <input class="form-check-input" type="checkbox" id="checkbox1">
+                        <label class="form-check-label" for="checkbox1" class="label-table"></label>
+                    </td>
+                    <td>
+                        <a>Date</a>
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+                        <a href="">Category</a>
+                    </td>
+                    <td>
+                        <a href="">Item</a>
+                    </td>
+                    <td>
+                        <h5>Total amount: {{$total}}</h5>
+                    </td>
+                    <td>
+                        <a href="">Comments</a>
+                    </td>
+                    <td>
+                        <a href="">Actions</a>
+                    </td>
+                </tr>
+                </tfoot>
             </table>
             <!--Table-->
         </div>
-
+        <div class="pagination-wrapper" style="margin: 0 auto;">
+            {{ $expenses->links() }}
+        </div>
     </div>
 
 </div>
@@ -328,6 +373,7 @@
 
     btn1.onclick = function() {
         modal.style.display = "none";
+        $(this).parents().find('.form-control').val("");
     }
 
     // When the user clicks anywhere outside of the modal, close it
@@ -375,14 +421,19 @@
     $('.incomeUpdateButtons').click(function(){
         let date = $(this).parents('tr').find('td:eq(0)').text();
         let from = $(this).parents('tr').find('td:eq(1)').text();
-        let description = $(this).parents('tr').find('td:eq(2)').text();
-        let amount = $(this).parents('tr').find('td:eq(3)').text();
+        let category = $(this).parents('tr').find('td:eq(2)').data('id');
+        let item = $(this).parents('tr').find('td:eq(3)').text();
+        let amount = $(this).parents('tr').find('td:eq(4)').text();
+        let comments = $(this).parents('tr').find('td:eq(5)').text();
+
 
         $('#inputPencilId').val(this.id)
         $('#inputPencilDate').val(date)
         $('#inputPencilFrom').val(from)
-        $('#inputPencilDescription').val(description)
+        // $('select[name="category_id"]').val(category)
         $('#inputPencilAmount').val(amount)
+        $('#inputPencilDescription').val(comments)
+
 
         // let id = $(this).attr('id');
         // let route = '';
@@ -395,7 +446,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function ()
     {
-        jQuery('select[name="category"]').on('change',function(){
+        jQuery('select[name="category_id"]').on('change',function(){
             var categoryID = jQuery(this).val();
 
             if(categoryID)
@@ -407,16 +458,17 @@
                     success:function(data)
                     {
                         console.log(data);
-                        jQuery('select[name="item"]').empty();
+                        jQuery('select[name="item_id"]').empty();
+                        $('select[name="item_id"]').append('<option value="">--- Select item ---</option>');
                         jQuery.each(data, function(key,value){
-                            $('select[name="item"]').append('<option value="'+ key +'">'+ value +'</option>');
+                            $('select[name="item_id"]').append('<option value="'+ key +'">'+ value +'</option>');
                         });
                     }
                 });
             }
             else
             {
-                $('select[name="item"]').empty();
+                $('select[name="item_id"]').empty();
             }
         });
     });

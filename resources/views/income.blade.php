@@ -169,12 +169,13 @@
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('home') }}';">
                 <i class="fas fa-th-large mt-0"></i>
             </button>
-            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
+            <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('expense') }}';">
                 <i class="fas fa-columns mt-0"></i>
             </button>
+            <a href="" class="white-text mx-3">Balance: {{ $balance }}</a>
         </div>
 
-        <a href="" class="white-text mx-3">Income table</a>
+        <h3 href="" class="white-text mx-3">Income table</h3>
 
         <div>
             <!-- Trigger/Open The Modal -->

@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FundsFlowTypeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
@@ -31,8 +32,8 @@ Route::post('/income-update', [IncomeController::class, 'incomeUpdate'])->name('
 
 Route::get('/expense', [ExpenseController::class, 'expense'])->name('expense');
 Route::post('/expense-insert', [ExpenseController::class, 'expenseInsert'])->name('expense-insert');
-Route::post('/expense-delete/{id}', [IncomeController::class, 'expenseDelete'])->name('expense-delete');
-Route::post('/expense-update', [IncomeController::class, 'expenseUpdate'])->name('expense-update');
+Route::post('/expense-delete/{id}', [ExpenseController::class, 'expenseDelete'])->name('expense-delete');
+Route::post('/expense-update', [ExpenseController::class, 'expenseUpdate'])->name('expense-update');
 
 Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
 
@@ -47,6 +48,11 @@ Route::post('/category-item-update', [CategoryItemController::class, 'updateItem
 Route::post('/category-item-delete/{id}', [CategoryItemController::class, 'categoryItemDelete'])->name('category-item-delete');
 
 Route::get('/home', [HomeController::class, 'home'])->name('home');
+
+Route::get('/flowType', [FundsFlowTypeController::class, 'openFundsFlowType'])->name('flow-type');
+Route::post('/flowType-create', [FundsFlowTypeController::class, 'createFundsFlowType'])->name('create-flow-type');
+Route::post('/flowType-delete{flow}', [FundsFlowTypeController::class, 'deleteFundsFlowType'])->name('delete-flow-type');
+Route::post('/flowType-update', [FundsFlowTypeController::class, 'updateFundsFlowType'])->name('update-flow-type');
 
 Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
 

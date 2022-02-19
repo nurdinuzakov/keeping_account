@@ -20,11 +20,16 @@ class Expense extends Model
 
     public function category()
     {
-        return $this->hasMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function item()
     {
-        return $this->hasMany(CategoryItem::class);
+        return $this->belongsTo(CategoryItem::class);
+    }
+
+    public function balance()
+    {
+        return $this->hasOne(Balance::class);
     }
 }

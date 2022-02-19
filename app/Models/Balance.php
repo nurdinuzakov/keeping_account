@@ -17,4 +17,14 @@ class Balance extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function income()
+    {
+        return $this->belongsTo(Income::class);
+    }
+
+    public function expense()
+    {
+        return $this->belongsTo(Expense::class);
+    }
 }

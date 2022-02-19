@@ -93,15 +93,15 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Create new category</h2>
+            <h2>Create new funds flow</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('category-create') }}" method="post">
+            <form action="{{ route('create-flow-type') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="from">Category name</label>
-                    <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new category name" name="category_name" required>
+                    <label for="from">Funds-flow name</label>
+                    <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new funds flow name" name="name" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Create</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Cancel</button>
@@ -113,16 +113,16 @@
 <div id="myPencilModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Change the category</h2>
+            <h2>Change the funds flow</h2>
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('category-update') }}" method="post">
+            <form action="{{ route('update-flow-type') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="from">Category name</label>
-                    <input type="hidden" id="hiddenPencil" name="category_id" value="">
-                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="category_name" required>
+                    <label for="from">Funds flow name</label>
+                    <input type="hidden" id="hiddenPencil" name="flow_id" value="">
+                    <input type="text" class="form-control" id="inputPencilFrom" value="" name="name" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Update</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Cancel</button>
@@ -146,11 +146,11 @@
             </button>
         </div>
 
-        <a href="" class="white-text mx-3">Balance table</a>
+        <a href="" class="white-text mx-3">FundsFlowTypes table</a>
 
         <div>
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Count the balance</button>
+            <button class="btn btn-primary" id="myBtn">Create flow</button>
         </div>
     </div>
     <!--/Card image-->
@@ -165,12 +165,12 @@
                 <thead>
                 <tr>
                     <th class="th-lg">
-                        <a>Category Id
+                        <a>Funds-flow Id
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Category name
+                        <a href="">Name
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -185,28 +185,25 @@
 
                 <!--Table body-->
                 <tbody>
-{{--                @foreach($categories as $value)--}}
-{{--                    <tr>--}}
-{{--                        <td>{{ $value->id }}</td>--}}
-{{--                        <form action="{{ route('category-item', $value->id) }}" method="post">--}}
-{{--                            @csrf--}}
-{{--                            <td><button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2"><a><h4>{{ $value->name }}</h4></a></button></td>--}}
-{{--                        </form>--}}
-{{--                        <td>--}}
-{{--                            <div style="display: flex">--}}
-{{--                                <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">--}}
-{{--                                    <i class="fas fa-pencil-alt mt-0"></i>--}}
-{{--                                </button>--}}
-{{--                                <form action="{{ route('category-delete', $value->id) }}" method="post">--}}
-{{--                                    @csrf--}}
-{{--                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">--}}
-{{--                                        <i class="far fa-trash-alt mt-0"></i>--}}
-{{--                                    </button>--}}
-{{--                                </form>--}}
-{{--                            </div>--}}
-{{--                        </td>--}}
-{{--                    </tr>--}}
-{{--                @endforeach--}}
+                @foreach($flows as $value)
+                    <tr>
+                        <td>{{ $value->id }}</td>
+                        <td>{{ $value->name }}</td>
+                        <td>
+                            <div style="display: flex">
+                                <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
+                                    <i class="fas fa-pencil-alt mt-0"></i>
+                                </button>
+                                <form action="{{ route('delete-flow-type', $value->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">
+                                        <i class="far fa-trash-alt mt-0"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
                 <!--Table body-->
                 <tfoot>
@@ -216,7 +213,7 @@
                     </td>
                     <td>
                         <div class="pagination-wrapper">
-{{--                            {{ $categories->links() }}--}}
+{{--                            {{ $flows->links() }}--}}
                         </div>
                     </td>
                     <td>

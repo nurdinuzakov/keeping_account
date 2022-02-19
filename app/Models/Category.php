@@ -20,6 +20,6 @@ class Category extends Model
 
     public function expenses()
     {
-        return $this->HasOne(Expense::class);
+           return $this->HasMany(Expense::class);
     }
 }

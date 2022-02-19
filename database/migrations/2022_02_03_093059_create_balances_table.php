@@ -15,10 +15,17 @@ class CreateBalancesTable extends Migration
     {
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
-            $table->unsignedbigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedbigInteger('income_id')->nullable();
+            $table->unsignedBigInteger('expense_id')->nullable();
+            $table->date('date');
             $table->float('balance');
             $table->timestamps();
+
+            $table->foreign('income_id')->references('id')->on('incomes')->cascadeOnDelete();
+            $table->foreign('expense_id')->references('id')->on('expenses')->cascadeOnDelete();
+
+            //            $table->unsignedbigInteger('user_id');
+//            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

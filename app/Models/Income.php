@@ -17,4 +17,9 @@ class Income extends Model
     {
         return $this->hasOne(User::class);
     }
+
+    public function balance()
+    {
+        return $this->hasOne(Balance::class);
+    }
 }
