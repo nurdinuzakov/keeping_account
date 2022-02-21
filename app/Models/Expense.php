@@ -30,6 +30,11 @@ class Expense extends Model
 
     public function balance()
     {
-        return $this->hasOne(Balance::class);
+        return $this->morphOne(PaymentHistory::class, 'balanceable');
+    }
+
+    public function flow()
+    {
+        return $this->belongsTo(PaymentMethods::class);
     }
 }

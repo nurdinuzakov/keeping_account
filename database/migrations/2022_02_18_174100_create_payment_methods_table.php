@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFundsFlowTypesTable extends Migration
+class CreatePaymentMethodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateFundsFlowTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('funds_flow_types', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->float('balance');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateFundsFlowTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('funds_flow_types');
+        Schema::dropIfExists('payment_methods');
     }
 }

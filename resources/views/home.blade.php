@@ -49,7 +49,7 @@
                 <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
             <div class="col-sm-4">
-                <a href="{{route('flow-type')}}"><h3>Funds flowing types</h3></a>
+                <a href="{{route('payment-methods')}}"><h3>Payment Methods</h3></a>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
                 <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>

@@ -7,7 +7,7 @@ use App\Models\CategoryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
     public function categories()
     {

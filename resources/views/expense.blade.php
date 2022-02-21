@@ -127,8 +127,13 @@
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
                 <div class="form-group">
-                    <label for="description">Comments</label>
-                    <input type="text" class="form-control" id="expenseDescription" placeholder="Expense type" name="comments">
+                    <label for="category">Funds flow </label>
+                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select Funds flow type ---</option>
+                        @foreach($flows as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Insert expense</button>
@@ -180,8 +185,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Comments</label>
-                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description">
+                    <label for="category">Funds flow </label>
+                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select Funds flow type ---</option>
+                        @foreach($flows as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update income</button>
@@ -233,32 +243,22 @@
                         <label class="form-check-label" for="checkbox" class="mr-2 label-table"></label>
                     </th>
                     <th class="th-lg">
-                        <a>Date
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a>Date</a>
                     </th>
                     <th class="th-lg">
                         <a href="">Responsible person</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Category
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Category</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Item
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Item</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Expense amount
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Expense amount</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Comments
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Funds flow type</a>
                     </th>
                     <th class="th-lg">
                         <a href="">Actions
@@ -272,6 +272,7 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($expenses as $value)
+{{--                    {{dd($value)}}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -282,7 +283,7 @@
                         <td data-id="">{{ $value->category ? $value->category->name : null }}</td>
                         <td>{{ $value->item ? $value->item->name : null }}</td>
                         <td>{{ $value->expense_amount }}</td>
-                        <td>{{$out = strlen( $value->comments ) > 30 ? substr( $value->comments ,0,30)." ..." :  $value->comments }}</td>
+                        <td>{{ $value->flow->name  }}</td>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
@@ -382,6 +383,7 @@
             modal.style.display = "none";
         }
     }
+    document.getElementById('inputDate').value = new Date().toISOString().substring(0, 10);
 </script>
 
 <script>

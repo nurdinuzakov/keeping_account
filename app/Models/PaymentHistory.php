@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Balance extends Model
+class PaymentHistory extends Model
 {
     use HasFactory;
 
-    protected $table = 'balances';
-
-    protected $guarded = ['id'];
+    protected $fillable = ['balanceable_id', 'balanceable_type', 'date', 'balance'];
+//    protected $table = 'balances';
+//
+//    protected $guarded = ['id'];
 
     public function user()
     {
@@ -26,5 +27,10 @@ class Balance extends Model
     public function expense()
     {
         return $this->belongsTo(Expense::class);
+    }
+
+    public function balanceable()
+    {
+        return $this->morphTo();
     }
 }

@@ -108,8 +108,13 @@
                     <input type="text" class="form-control" id="inputFrom" placeholder="Source of income" name="from" required>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputDescription" placeholder="Income type" name="description" required>
+                    <label for="category">Funds flow </label>
+                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select Funds flow type ---</option>
+                        @foreach($flows as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="amount">Amount</label>
@@ -144,8 +149,13 @@
                     <input type="text" class="form-control" id="inputPencilFrom" value="" name="from" required>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="inputPencilDescription" value="" name="description" required>
+                    <label for="category">Funds flow </label>
+                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select Funds flow type ---</option>
+                        @foreach($flows as $key => $name)
+                            <option value="{{ $key }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="amount">Amount</label>
@@ -173,6 +183,11 @@
                 <i class="fas fa-columns mt-0"></i>
             </button>
             <a href="" class="white-text mx-3">Balance: {{ $balance }}</a>
+            {{dd($flowsBalances)}}
+            @foreach($flowsBalances as $key => $flowsBalance)
+                {{dd($flowsBalances)}}
+                <a href="" class="white-text mx-3">Balance: {{ $flow }}</a>
+            @endforeach
         </div>
 
         <h3 href="" class="white-text mx-3">Income table</h3>
@@ -208,7 +223,7 @@
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Description
+                        <a href="">Funds flow type
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -229,6 +244,7 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($incomes as $value)
+{{--                    {{ dd($value) }}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -236,7 +252,7 @@
                         </th>
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->from }}</td>
-                        <td>{{ mb_strlen( $value->description ) > 30 ? mb_substr($value->description ,0, 30) . " ..." :  $value->description }}</td>
+                        <td>{{ $value->flow->name  }}</td>
                         <td>{{ $value->amount }}</td>
                         <td>
                             <div style="display: flex">
@@ -342,6 +358,7 @@
             modal.style.display = "none";
           }
         }
+       document.getElementById('inputDate').value = new Date().toISOString().substring(0, 10);
 </script>
 
 <script>

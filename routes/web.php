@@ -5,7 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CategoryItemController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\FundsFlowTypeController;
+use App\Http\Controllers\PaymentMethodsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
@@ -49,10 +49,10 @@ Route::post('/category-item-delete/{id}', [CategoryItemController::class, 'categ
 
 Route::get('/home', [HomeController::class, 'home'])->name('home');
 
-Route::get('/flowType', [FundsFlowTypeController::class, 'openFundsFlowType'])->name('flow-type');
-Route::post('/flowType-create', [FundsFlowTypeController::class, 'createFundsFlowType'])->name('create-flow-type');
-Route::post('/flowType-delete{flow}', [FundsFlowTypeController::class, 'deleteFundsFlowType'])->name('delete-flow-type');
-Route::post('/flowType-update', [FundsFlowTypeController::class, 'updateFundsFlowType'])->name('update-flow-type');
+Route::get('/payment-methods', [PaymentMethodsController::class, 'paymentMethods'])->name('payment-methods');
+Route::post('/paymentMethod-create', [PaymentMethodsController::class, 'createPaymentMethods'])->name('create-payment-methods');
+Route::post('/paymentMethod-delete{method}', [PaymentMethodsController::class, 'deletePaymentMethod'])->name('delete-payment-method');
+Route::post('/paymentMethod-update', [PaymentMethodsController::class, 'updatePaymentMethod'])->name('update-payment-method');
 
 Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
 

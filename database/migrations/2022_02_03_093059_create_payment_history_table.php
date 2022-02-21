@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBalancesTable extends Migration
+class CreatePaymentHistoryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateBalancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('balances', function (Blueprint $table) {
+        Schema::create('payment_history', function (Blueprint $table) {
             $table->id();
-            $table->unsignedbigInteger('income_id')->nullable();
-            $table->unsignedBigInteger('expense_id')->nullable();
+            $table->integer('balanceable_id')->unsigned();
+            $table->string('balanceable_type');
+            $table->unsignedbigInteger('payment_id');
             $table->date('date');
+            $table->float('amount');
             $table->float('balance');
             $table->timestamps();
-
-            $table->foreign('income_id')->references('id')->on('incomes')->cascadeOnDelete();
-            $table->foreign('expense_id')->references('id')->on('expenses')->cascadeOnDelete();
 
             //            $table->unsignedbigInteger('user_id');
 //            $table->foreign('user_id')->references('id')->on('users');
@@ -36,6 +35,6 @@ class CreateBalancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('balances');
+        Schema::dropIfExists('payment_history');
     }
 }

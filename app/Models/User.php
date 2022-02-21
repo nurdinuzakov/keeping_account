@@ -44,7 +44,7 @@ class User extends Authenticatable
 
     public function balances()
     {
-        return $this->hasMany(Balance::class);
+        return $this->hasMany(PaymentHistory::class);
     }
 
     public function incomes()

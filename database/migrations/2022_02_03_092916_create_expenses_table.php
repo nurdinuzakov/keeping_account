@@ -17,11 +17,13 @@ class CreateExpensesTable extends Migration
             $table->id();
 //            $table->unsignedbigInteger('user_id');
             $table->unsignedbigInteger('category_id');
+            $table->unsignedbigInteger('flow_id');
             $table->unsignedBigInteger('item_id')->nullable();
             $table->date('date');
             $table->string('responsible_person');
             $table->double('expense_amount');
-            $table->text('comments')->nullable();
+            $table->double('total_balance');
+            $table->double('_balance');
             $table->string('receipt_photo')->nullable();
             $table->timestamps();
 

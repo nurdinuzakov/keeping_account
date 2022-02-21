@@ -97,7 +97,7 @@
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('create-flow-type') }}" method="post">
+            <form action="{{ route('create-payment-methods') }}" method="post">
                 @csrf
                 <div class="form-group">
                     <label for="from">Funds-flow name</label>
@@ -117,11 +117,11 @@
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
-            <form action="{{ route('update-flow-type') }}" method="post">
+            <form action="{{ route('update-payment-method') }}" method="post">
                 @csrf
                 <div class="form-group">
                     <label for="from">Funds flow name</label>
-                    <input type="hidden" id="hiddenPencil" name="flow_id" value="">
+                    <input type="hidden" id="hiddenPencil" name="method_id" value="">
                     <input type="text" class="form-control" id="inputPencilFrom" value="" name="name" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Update</button>
@@ -146,11 +146,11 @@
             </button>
         </div>
 
-        <a href="" class="white-text mx-3">FundsFlowTypes table</a>
+        <a href="" class="white-text mx-3">Payment Methods table</a>
 
         <div>
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Create flow</button>
+            <button class="btn btn-primary" id="myBtn">Create method</button>
         </div>
     </div>
     <!--/Card image-->
@@ -165,12 +165,15 @@
                 <thead>
                 <tr>
                     <th class="th-lg">
-                        <a>Funds-flow Id
+                        <a>Payment Methods Id</a>
+                    </th>
+                    <th class="th-lg">
+                        <a href="">Name
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Name
+                        <a href="">Balance
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -185,16 +188,17 @@
 
                 <!--Table body-->
                 <tbody>
-                @foreach($flows as $value)
+                @foreach($paymentMethods as $value)
                     <tr>
                         <td>{{ $value->id }}</td>
                         <td>{{ $value->name }}</td>
+                        <td>{{ $value->balance }}</td>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
                                     <i class="fas fa-pencil-alt mt-0"></i>
                                 </button>
-                                <form action="{{ route('delete-flow-type', $value->id) }}" method="post">
+                                <form action="{{ route('delete-payment-method', $value->id) }}" method="post">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">
                                         <i class="far fa-trash-alt mt-0"></i>

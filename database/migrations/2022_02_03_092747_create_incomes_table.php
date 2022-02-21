@@ -15,9 +15,9 @@ class CreateIncomesTable extends Migration
     {
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedbigInteger('flow_id');
             $table->date('date');
             $table->string('from');
-            $table->text('description')->nullable();
             $table->double('amount');
             $table->timestamps();
         });

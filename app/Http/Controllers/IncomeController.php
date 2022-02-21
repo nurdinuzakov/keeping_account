@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Balance;
+use App\Models\PaymentHistory;
 use App\Models\Expense;
+use App\Models\PaymentMethods;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,18 +13,21 @@ class IncomeController extends BaseController
 {
     public function income()
     {
-        $income = Income::orderBy('created_at', 'DESC');
-        $balances = Balance::latest()->first();
+        $income = Income::with('flow');
+        $income = $income->orderBy('created_at', 'DESC');
+        $balances = PaymentHistory::latest()->first();
         if (!$balances)
         {
             $balance = 0;
         }else{
             $balance = $balances->balance;
         }
+
+        $flows = PaymentMethods::pluck("name","id");
         $total = $income->pluck('amount');
         $incomes = $income->paginate(15);
         $totalSum = $total->sum();
-        return view('income', ['incomes' => $incomes, 'total' => $totalSum, 'balance' => $balance]);
+        return view('income', ['incomes' => $incomes, 'total' => $totalSum, 'balance' => $balance, 'flowsBalances' => $flows]);
     }
 
     public function incomeInsert(Request $request)
@@ -33,13 +37,38 @@ class IncomeController extends BaseController
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',
             'from'        => 'required|string',
-            'description' => 'required|string',
+            'flow_id'        => 'required|numeric',
             'amount'      => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
             return $this->sendError($validator->errors()->first(),422);
         }
+
+
+        $flows = PaymentMethods::all();
+        $flowsBalances = [];
+        foreach($flows as $flow){
+            $incomeFlow = Income::from('incomes As i')
+                ->select('i.amount')
+                ->join('funds_flow_types AS f', 'f.id', '=', 'i.flow_id')
+                ->where('f.name', '=', $flow->name)
+                ->pluck('i.amount');
+            $incomeFlowSum = $incomeFlow->sum();
+
+            $expenseFlow = Expense::from('expenses As e')
+                ->select('e.expense_amount')
+                ->join('funds_flow_types AS g', 'g.id', '=', 'e.flow_id')
+                ->where('g.name', '=', $flow->name)
+                ->pluck('e.expense_amount');
+
+            $expenseFlowSum = $expenseFlow->sum();
+            $flowBalance = $incomeFlowSum - $expenseFlowSum;
+
+            $flowsBalances [$flow->name] = $flowBalance;
+        }
+//        dd($flowsBalances);
+
 
         $incomes = Income::create($inputs)->orderBy('created_at', 'DESC')->paginate(15);
         $incomeAmount = $incomes->pluck('amount');
@@ -50,9 +79,10 @@ class IncomeController extends BaseController
 
         $calculated = $incomeTotal-$expenseTotal;
 
-        $balance = Balance::create(['income_id' => $incomes[0]->id, 'date' => $inputs['date'], 'balance' => $calculated]);
+        $balance = PaymentHistory::create(['balanceable_id' => $incomes[0]->id, 'balanceable_type' => 'App\Models\Income', 'date' => $inputs['date'], 'balance' => $calculated]);
 
-        return redirect()->route('income', ['incomes' => $incomes, 'balance' => $balance]);
+
+        return redirect()->route('income');
     }
 
     public function incomeDelete($id)
@@ -72,7 +102,7 @@ class IncomeController extends BaseController
 
         $calculated = $incomeTotal-$expenseTotal;
         $date = new \DateTime();
-        $newBalance = Balance::create(['date' => $date, 'balance' => $calculated]);
+        $newBalance = PaymentHistory::create(['date' => $date, 'balance' => $calculated]);
 
         return redirect()->route('income', ['incomes' => $income, 'balance' => $newBalance]);
     }
@@ -84,7 +114,7 @@ class IncomeController extends BaseController
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',
             'from'        => 'required|string',
-            'description' => 'required|string',
+            'flow_id'        => 'required|numeric',
             'amount'      => 'required|numeric'
         ]);
 
@@ -92,21 +122,21 @@ class IncomeController extends BaseController
             return $this->sendError($validator->errors()->first(),422);
         }
 
-        $incomes = Income::all();
+        $incomes = Income::with('balance')->get();
         $income = $incomes->find($inputs['inputPencilId']);
 
-        $oldBalance = $income->balance->balance;
+        $balance = $income->balance;
+        $oldBalance = $balance->balance;
         $oldIncome = $income->amount;
         $originalBalance = $oldBalance - $oldIncome;
         $newBalance = $originalBalance + $inputs['amount'];
-        $balance = Balance::where('income_id', $inputs['inputPencilId'])->first();
         $balance->balance=$newBalance;
         $balance->save();
         $dataSend = $balance->balance;
 
         $income->date = $inputs['date'];
         $income->from = $inputs['from'];
-        $income->description = $inputs['description'];
+        $income->flow_id = $inputs['flow_id'];
         $income->amount = $inputs['amount'];
         $income->save();
 

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Balance;
+use App\Models\PaymentHistory;
 use App\Models\Category;
 use App\Models\Expense;
+use App\Models\PaymentMethods;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,22 +15,25 @@ class ExpenseController extends BaseController
     public function expense()
     {
         $categories = Category::pluck("name","id");
-        $expenses = Expense::with('category', 'item')
+        $expenses = Expense::with('category', 'item', 'flow')
                             ->orderBy('created_at', 'DESC')
                             ->paginate(15);
         $total = $expenses->pluck('expense_amount');
         $totalSum = $total->sum();
-        $balances = Balance::latest()->first();
+        $balances = PaymentHistory::latest()->first();
         if (!$balances)
         {
             $balance = 0;
         }else{
             $balance = $balances->balance;
         }
+
+        $flows = PaymentMethods::pluck("name","id");
         return view('expense', ['expenses'     => $expenses,
                                         'total'      => $totalSum,
                                         'categories' => $categories,
-                                        'balance'    => $balance]);
+                                        'balance'    => $balance,
+                                        'flows'    => $flows]);
     }
 
     public function expenseInsert(Request $request)
@@ -58,7 +62,7 @@ class ExpenseController extends BaseController
         $balance = $incomeTotal-$expenseTotal;
 
 
-        $recordBalance = Balance::create(['expense_id' => $expense[0]->id, 'date' => $inputs['date'], 'balance' => $balance]);
+        $recordBalance = PaymentHistory::create(['expense_id' => $expense[0]->id, 'date' => $inputs['date'], 'balance' => $balance]);
 
         return redirect()->route('expense', ['expense' => $expense, 'balance' => $recordBalance]);
     }
@@ -70,13 +74,13 @@ class ExpenseController extends BaseController
         {
             return $this->sendError(['message' => 'Expense with this id was not found'],422);
         }
-        $balances = Balance::get();
+        $balances = PaymentHistory::get();
         $latestBalance = $balances->last();
         $balance = $latestBalance->balance + $expense->expense_amount;
         $expense->delete();
         $expense->get();
         $date = new \DateTime();
-        $newBalance = Balance::create(['date' => $date, 'balance' => $balance]);
+        $newBalance = PaymentHistory::create(['date' => $date, 'balance' => $balance]);
 
         return redirect()->route('expense', ['expense' => $expense, 'balance' => $newBalance]);
     }
@@ -89,7 +93,7 @@ class ExpenseController extends BaseController
             'date'        => 'required|date',
             'from'        => 'required|string',
             'category_id' => 'required|numeric',
-            'description' => 'required|string',
+            'flow_id'        => 'required|numeric',
             'amount'      => 'required|numeric'
         ]);
 
@@ -104,7 +108,7 @@ class ExpenseController extends BaseController
         $oldExpence = $expense->expense_amount;
         $originalBalance = $oldBalance + $oldExpence;
         $newBalance = $originalBalance - $inputs['amount'];
-        $balance = Balance::where('expense_id', $inputs['inputPencilId'])->first();
+        $balance = PaymentHistory::where('expense_id', $inputs['inputPencilId'])->first();
         $balance->balance=$newBalance;
         $balance->save();
         $dataSend = $balance->balance;
@@ -115,7 +119,7 @@ class ExpenseController extends BaseController
         $expense->date = $inputs['date'];
         $expense->responsible_person = $inputs['from'];
         $expense->expense_amount = $inputs['amount'];
-        $expense->comments = $inputs['description'];
+        $expense->flow_id = $inputs['flow_id'];
         $expense->save();
 
         $expense->get();

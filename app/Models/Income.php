@@ -20,6 +20,11 @@ class Income extends Model
 
     public function balance()
     {
-        return $this->hasOne(Balance::class);
+        return $this->morphOne(PaymentHistory::class, 'balanceable');
+    }
+
+    public function paymentMethods()
+    {
+        return $this->belongsTo(PaymentMethods::class);
     }
 }
