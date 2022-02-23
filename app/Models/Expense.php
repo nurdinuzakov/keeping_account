@@ -28,13 +28,13 @@ class Expense extends Model
         return $this->belongsTo(CategoryItem::class);
     }
 
-    public function balance()
+    public function paymentHistory()
     {
         return $this->morphOne(PaymentHistory::class, 'balanceable');
     }
 
-    public function flow()
+    public function paymentMethods()
     {
-        return $this->belongsTo(PaymentMethods::class);
+        return $this->belongsTo(PaymentMethods::class, 'paymentMethod_id');
     }
 }

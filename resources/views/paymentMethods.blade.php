@@ -93,15 +93,15 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Create new funds flow</h2>
+            <h2>Create new payment method</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
             <form action="{{ route('create-payment-methods') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="from">Funds-flow name</label>
-                    <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new funds flow name" name="name" required>
+                    <label for="from">Payment method name</label>
+                    <input type="text" class="form-control" id="inputFrom" placeholder="Please enter the new payment method" name="name" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Create</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">Cancel</button>
@@ -113,14 +113,14 @@
 <div id="myPencilModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Change the funds flow</h2>
+            <h2>Change the payment method</h2>
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
             <form action="{{ route('update-payment-method') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="from">Funds flow name</label>
+                    <label for="from">Payment method name</label>
                     <input type="hidden" id="hiddenPencil" name="method_id" value="">
                     <input type="text" class="form-control" id="inputPencilFrom" value="" name="name" required>
                 </div>
@@ -188,6 +188,9 @@
 
                 <!--Table body-->
                 <tbody>
+                @error('error_message')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
                 @foreach($paymentMethods as $value)
                     <tr>
                         <td>{{ $value->id }}</td>

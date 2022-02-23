@@ -16,7 +16,7 @@ class CreatePaymentMethodsTable extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('balance');
+            $table->float('balance')->nullable();
             $table->timestamps();
         });
     }

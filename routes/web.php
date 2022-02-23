@@ -55,4 +55,3 @@ Route::post('/paymentMethod-delete{method}', [PaymentMethodsController::class, '
 Route::post('/paymentMethod-update', [PaymentMethodsController::class, 'updatePaymentMethod'])->name('update-payment-method');
 
 Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
-

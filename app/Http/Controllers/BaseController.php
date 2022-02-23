@@ -30,7 +30,6 @@ class BaseController extends Controller
 
     public function sendError($message, $code): \Illuminate\Http\JsonResponse
     {
-
         return response()->json([
             'status' => false,
             'code' => $code,

@@ -9,7 +9,7 @@ class PaymentMethods extends Model
 {
     use HasFactory;
 
-    protected $table = 'funds_flow_types';
+    protected $table = 'payment_methods';
 
     protected $guarded = ['id'];
 
@@ -20,6 +20,6 @@ class PaymentMethods extends Model
 
     public function incomes()
     {
-        return $this->HasMany(Income::class);
+        return $this->HasMany(Income::class, 'paymentMethod_id');
     }
 }

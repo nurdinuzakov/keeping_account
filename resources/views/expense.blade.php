@@ -123,15 +123,15 @@
                 </div>
                 <div class="form-group">
                     <label for="amount">Expense amount</label>
-                    <input type="number" class="form-control" id="expense_amount" placeholder="Expense amount" min="0" name="expense_amount" required>
+                    <input type="number" class="form-control" id="expense_amount" placeholder="Expense amount" min="0" name="amount" required>
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
                 <div class="form-group">
                     <label for="category">Funds flow </label>
-                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                    <select name="method_id" id="category" class="form-control" style="width:250px">
                         <option value="">--- Select Funds flow type ---</option>
-                        @foreach($flows as $key => $name)
-                            <option value="{{ $key }}">{{ $name }}</option>
+                        @foreach($paymentMethods as $paymentMethod)
+                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -188,8 +188,8 @@
                     <label for="category">Funds flow </label>
                     <select name="flow_id" id="category" class="form-control" style="width:250px">
                         <option value="">--- Select Funds flow type ---</option>
-                        @foreach($flows as $key => $name)
-                            <option value="{{ $key }}">{{ $name }}</option>
+                        @foreach($paymentMethods as $paymentMethod)
+                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -215,7 +215,10 @@
                 <i class="fas fa-columns mt-0"></i>
             </button>
 
-            <a href="" class="white-text mx-3">Balance: {{ $balance }}</a>
+            <a href="" class="white-text mx-3">Total balance: {{ $totalBalance }}</a>
+            @foreach($paymentMethods as $paymentMethod)
+                <a href="" class="white-text mx-3">{{ $paymentMethod->name }}: {{ $paymentMethod->balance ? $paymentMethod->balance : 0}}</a>
+            @endforeach
         </div>
 
         <a href="" class="white-text mx-3">Expense table</a>
@@ -258,7 +261,7 @@
                         <a href="">Expense amount</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Funds flow type</a>
+                        <a href="">Payment method</a>
                     </th>
                     <th class="th-lg">
                         <a href="">Actions
@@ -282,8 +285,8 @@
                         <td>{{ $value->responsible_person }}</td>
                         <td data-id="">{{ $value->category ? $value->category->name : null }}</td>
                         <td>{{ $value->item ? $value->item->name : null }}</td>
-                        <td>{{ $value->expense_amount }}</td>
-                        <td>{{ $value->flow->name  }}</td>
+                        <td>{{ $value->amount }}</td>
+                        <td>{{ $value->paymentMethods->name  }}</td>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
@@ -325,10 +328,10 @@
                         <a href="">Item</a>
                     </td>
                     <td>
-                        <h5>Total amount: {{$total}}</h5>
+                        <h5>Total amount: {{$totalAmount}}</h5>
                     </td>
                     <td>
-                        <a href="">Comments</a>
+                        <a href="">Payment method</a>
                     </td>
                     <td>
                         <a href="">Actions</a>

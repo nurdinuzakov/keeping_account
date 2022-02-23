@@ -42,7 +42,7 @@ class PaymentMethodsController extends BaseController
     {
         $validator = Validator::make($request->all(),[
             'method_id' => 'required|integer',
-            'name'     => 'required|unique:funds_flow_types|string',
+            'name'     => 'required|unique:payment_methods|string',
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors()->first(),422);

@@ -9,10 +9,10 @@ class PaymentHistory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['balanceable_id', 'balanceable_type', 'date', 'balance'];
-//    protected $table = 'balances';
-//
-//    protected $guarded = ['id'];
+//    protected $fillable = ['balanceable_id', 'balanceable_type', 'date', 'balance'];
+    protected $table = 'payment_history';
+
+    protected $guarded = ['id'];
 
     public function user()
     {

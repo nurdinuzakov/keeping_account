@@ -13,31 +13,35 @@ class IncomeController extends BaseController
 {
     public function income()
     {
-        $income = Income::with('flow');
+        $income = Income::with('paymentMethods');
         $income = $income->orderBy('created_at', 'DESC');
-        $balances = PaymentHistory::latest()->first();
-        if (!$balances)
+        $pluckedAmount = $income->pluck('amount');
+        $totalAmount = $pluckedAmount->sum();
+        $paymentMethods = PaymentMethods::all();
+
+        $totalBalance = 0;
+        foreach ($paymentMethods as $value)
         {
-            $balance = 0;
-        }else{
-            $balance = $balances->balance;
+            $itemBalance = $value->balance;
+
+            $totalBalance += $itemBalance;
         }
 
-        $flows = PaymentMethods::pluck("name","id");
-        $total = $income->pluck('amount');
         $incomes = $income->paginate(15);
-        $totalSum = $total->sum();
-        return view('income', ['incomes' => $incomes, 'total' => $totalSum, 'balance' => $balance, 'flowsBalances' => $flows]);
+
+        return view('income', ['incomes' => $incomes, 'totalBalance' => $totalBalance,
+                                    'paymentMethods' => $paymentMethods, 'totalAmount' => $totalAmount]);
     }
 
     public function incomeInsert(Request $request)
     {
         $inputs = $request->all();
+//        dd($inputs);
 
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',
             'from'        => 'required|string',
-            'flow_id'        => 'required|numeric',
+            'method_id'   => 'required|exists:payment_methods,id',
             'amount'      => 'required|numeric'
         ]);
 
@@ -45,41 +49,37 @@ class IncomeController extends BaseController
             return $this->sendError($validator->errors()->first(),422);
         }
 
+        $income = Income::create([
+            'paymentMethod_id' => $inputs['method_id'],
+            'date' => $inputs['date'],
+            'from' => $inputs['from'],
+            'amount' => $inputs['amount']
+        ]);
 
-        $flows = PaymentMethods::all();
-        $flowsBalances = [];
-        foreach($flows as $flow){
-            $incomeFlow = Income::from('incomes As i')
-                ->select('i.amount')
-                ->join('funds_flow_types AS f', 'f.id', '=', 'i.flow_id')
-                ->where('f.name', '=', $flow->name)
-                ->pluck('i.amount');
-            $incomeFlowSum = $incomeFlow->sum();
+        $paymentMethodsBalance = PaymentMethods::find($inputs['method_id']);
 
-            $expenseFlow = Expense::from('expenses As e')
-                ->select('e.expense_amount')
-                ->join('funds_flow_types AS g', 'g.id', '=', 'e.flow_id')
-                ->where('g.name', '=', $flow->name)
-                ->pluck('e.expense_amount');
-
-            $expenseFlowSum = $expenseFlow->sum();
-            $flowBalance = $incomeFlowSum - $expenseFlowSum;
-
-            $flowsBalances [$flow->name] = $flowBalance;
+        if (!$paymentMethodsBalance->balance){
+            $itemBalance = 0;
+        }else{
+            $itemBalance = $paymentMethodsBalance->balance;
         }
-//        dd($flowsBalances);
 
+        $newTotalBalance = $itemBalance + $inputs['amount'];
 
-        $incomes = Income::create($inputs)->orderBy('created_at', 'DESC')->paginate(15);
-        $incomeAmount = $incomes->pluck('amount');
-        $incomeTotal = $incomeAmount->sum();
+        $paymentHistory = PaymentHistory::create([
+            'balanceable_id'   => $income->id,
+            'balanceable_type' => 'App\Models\Income',
+            'payment_id'       => $inputs['method_id'],
+            'date'             => $inputs['date'],
+            'amount'           => $inputs['amount'],
+            'balance_history'     => $newTotalBalance
+        ]);
 
-        $expenseAmount = Expense::pluck('expense_amount');
-        $expenseTotal = $expenseAmount->sum();
-
-        $calculated = $incomeTotal-$expenseTotal;
-
-        $balance = PaymentHistory::create(['balanceable_id' => $incomes[0]->id, 'balanceable_type' => 'App\Models\Income', 'date' => $inputs['date'], 'balance' => $calculated]);
+        $paymentMethods = PaymentMethods::find($inputs['method_id']);
+        $oldBalance = $paymentMethods->balance;
+        $newBalance = $oldBalance + $inputs['amount'];
+        $paymentMethods->balance = $newBalance;
+        $paymentMethods->save();
 
 
         return redirect()->route('income');
@@ -92,29 +92,29 @@ class IncomeController extends BaseController
         {
             return $this->sendError(['message' => 'Income with this id was not found'],422);
         }
+
+        $incomeAmount = $income->amount;
+        $paymentMethod_id = $income->paymentMethod_id;
+        $paymentMethod = PaymentMethods::find($paymentMethod_id);
+        $paymentMethodBalance = $paymentMethod->balance;
+        $newPaymentMethodBalance = $paymentMethodBalance - $incomeAmount;
+        $paymentMethod->balance = $newPaymentMethodBalance;
+        $paymentMethod->save();
+
         $income->delete();
-        $income->get();
-        $incomeAmounts = Income::pluck('amount');
-        $incomeTotal = $incomeAmounts->sum();
 
-        $expenseAmounts = Expense::pluck('expense_amount');
-        $expenseTotal = $expenseAmounts->sum();
-
-        $calculated = $incomeTotal-$expenseTotal;
-        $date = new \DateTime();
-        $newBalance = PaymentHistory::create(['date' => $date, 'balance' => $calculated]);
-
-        return redirect()->route('income', ['incomes' => $income, 'balance' => $newBalance]);
+        return redirect()->route('income');
     }
 
     public function incomeUpdate(Request $request)
     {
         $inputs = $request->all();
+//        dd($inputs);
 
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',
             'from'        => 'required|string',
-            'flow_id'        => 'required|numeric',
+            'method_id'     => 'required|exists:payment_methods,id',
             'amount'      => 'required|numeric'
         ]);
 
@@ -122,25 +122,53 @@ class IncomeController extends BaseController
             return $this->sendError($validator->errors()->first(),422);
         }
 
-        $incomes = Income::with('balance')->get();
-        $income = $incomes->find($inputs['inputPencilId']);
+        $incomeWithRelations = PaymentMethods::where('id', $inputs['method_id'])
+                                                ->with(['incomes' => function($query) use ($inputs){
+                                                    return $query->where('id', $inputs['inputPencilId'])
+                                                        ->with('paymentHistory');
+                                                }])->first();
+        dd($incomeWithRelations);
 
-        $balance = $income->balance;
-        $oldBalance = $balance->balance;
-        $oldIncome = $income->amount;
-        $originalBalance = $oldBalance - $oldIncome;
-        $newBalance = $originalBalance + $inputs['amount'];
-        $balance->balance=$newBalance;
-        $balance->save();
-        $dataSend = $balance->balance;
+        $paymentMethodBalance = $incomeWithRelations->balance;
+        $income = $incomeWithRelations->incomes[0];
 
-        $income->date = $inputs['date'];
-        $income->from = $inputs['from'];
-        $income->flow_id = $inputs['flow_id'];
-        $income->amount = $inputs['amount'];
+
+        $incomeAmount = $income->amount;
+
+        $incomeData = [
+            'id' => $inputs['inputPencilId'],
+            'paymentMethod_id' => $inputs['method_id'],
+            'date'             => $inputs['date'],
+            'from'             => $inputs['from'],
+            'amount'           => $inputs['amount']
+        ];
+
+        $income->update($incomeData);
         $income->save();
 
-        $income->get();
-        return redirect()->route('income', ['incomes' => $incomes, 'balance' => $dataSend]);
+        $paymentHistory = $income->paymentHistory;
+
+        $oldBalance = $paymentMethodBalance-$incomeAmount;
+        $newBalance = $oldBalance + $inputs['amount'];
+
+        $paymentHistoryData = [
+            'balanceable_id'   => $inputs['inputPencilId'],
+            'balanceable_type' => 'App\Models\Income',
+            'payment_id'       => $inputs['method_id'],
+            'date'             => $inputs['date'],
+            'amount'           => $inputs['amount'],
+            'balance_history'  => $newBalance
+        ];
+
+        $paymentHistory->update($paymentHistoryData);
+        $paymentHistory->save();
+
+        $paymentMethod = PaymentMethods::find($inputs['method_id']);
+
+        $paymentMethod->balance = $newBalance;
+        $paymentMethod->save();
+
+
+        return redirect()->route('income');
     }
 }

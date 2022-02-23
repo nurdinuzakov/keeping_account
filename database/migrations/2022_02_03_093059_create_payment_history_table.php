@@ -20,7 +20,7 @@ class CreatePaymentHistoryTable extends Migration
             $table->unsignedbigInteger('payment_id');
             $table->date('date');
             $table->float('amount');
-            $table->float('balance');
+            $table->float('balance_history');
             $table->timestamps();
 
             //            $table->unsignedbigInteger('user_id');

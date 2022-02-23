@@ -15,54 +15,97 @@ class ExpenseController extends BaseController
     public function expense()
     {
         $categories = Category::pluck("name","id");
-        $expenses = Expense::with('category', 'item', 'flow')
+        $expenses = Expense::with('category', 'item', 'paymentMethods')
                             ->orderBy('created_at', 'DESC')
                             ->paginate(15);
-        $total = $expenses->pluck('expense_amount');
-        $totalSum = $total->sum();
-        $balances = PaymentHistory::latest()->first();
-        if (!$balances)
+        $pluckedAmount = $expenses->pluck('amount');
+        $totalAmount = $pluckedAmount->sum();
+        $paymentMethods = PaymentMethods::all();
+        $totalBalance = 0;
+        foreach ($paymentMethods as $value)
         {
-            $balance = 0;
-        }else{
-            $balance = $balances->balance;
+            $itemBalance = $value->balance;
+
+            $totalBalance += $itemBalance;
         }
 
-        $flows = PaymentMethods::pluck("name","id");
+
         return view('expense', ['expenses'     => $expenses,
-                                        'total'      => $totalSum,
+                                        'totalAmount'      => $totalAmount,
                                         'categories' => $categories,
-                                        'balance'    => $balance,
-                                        'flows'    => $flows]);
+                                        'totalBalance'    => $totalBalance,
+                                        'paymentMethods'    => $paymentMethods]);
     }
 
     public function expenseInsert(Request $request)
     {
         $inputs = $request->all();
+//        dd($inputs);
 
         $validator = Validator::make($inputs,[
             'date'                     => 'required|date',
-            'responsible_person'        => 'required|string',
-            'category_id'                 => 'required|numeric',
-            'expense_amount'      => 'required|numeric'
+            'responsible_person'       => 'required|string',
+            'category_id'              => 'required|exists:category,id',
+            'amount'                   => 'required|numeric',
+            'method_id'                => 'required|exists:payment_methods,id'
         ]);
 
         if ($validator->fails()) {
             return $this->sendError($validator->errors()->first(),422);
         }
 
-        $expense = Expense::create($inputs)->orderBy('created_at', 'DESC')->paginate(15);
+        $expense = Expense::create([
+            'category_id'       => $inputs['category_id'],
+            'paymentMethod_id'  => $inputs['method_id'],
+            'item_id'           => $inputs['item_id'],
+            'date'              => $inputs['date'],
+            'responsible_person'=> $inputs['responsible_person'],
+            'amount'            => $inputs['amount']
+        ]);
+//        ->orderBy('created_at', 'DESC')->paginate(15);
 
-        $expenseAmount = $expense->pluck('expense_amount');
-        $expenseTotal = $expenseAmount->sum();
+        $paymentMethodsBalance = PaymentMethods::find($inputs['method_id']);
 
-        $income = Income::pluck('amount');
-        $incomeTotal = $income->sum();
+        if (!$paymentMethodsBalance->balance){
+            $itemBalance = 0;
+        }else{
+            $itemBalance = $paymentMethodsBalance->balance;
+        }
 
-        $balance = $incomeTotal-$expenseTotal;
+        $newTotalBalance = $itemBalance - $inputs['amount'];
+
+        $paymentHistory = PaymentHistory::create([
+            'balanceable_id'   => $expense->id,
+            'balanceable_type' => 'App\Models\Expense',
+            'payment_id'       => $inputs['method_id'],
+            'date'             => $inputs['date'],
+            'amount'           => $inputs['amount'],
+            'balance_history'     => $newTotalBalance
+        ]);
+
+        $paymentMethods = PaymentMethods::find($inputs['method_id']);
+        $oldBalance = $paymentMethods->balance;
+        $newBalance = $oldBalance - $inputs['amount'];
+        $paymentMethods->balance = $newBalance;
+        $paymentMethods->save();
 
 
-        $recordBalance = PaymentHistory::create(['expense_id' => $expense[0]->id, 'date' => $inputs['date'], 'balance' => $balance]);
+        return redirect()->route('expense');
+
+        dd($paymentHistory);
+
+
+
+//        $expenseAmount = $expense->pluck('expense_amount');
+//        $expenseTotal = $expenseAmount->sum();
+//
+//        $income = Income::pluck('amount');
+//        $incomeTotal = $income->sum();
+//
+//        $balance = $incomeTotal-$expenseTotal;
+//
+//
+//        $recordBalance = PaymentHistory::create(['expense_id' => $expense[0]->id, 'date' => $inputs['date'], 'balance' => $balance]);
 
         return redirect()->route('expense', ['expense' => $expense, 'balance' => $recordBalance]);
     }
@@ -88,6 +131,7 @@ class ExpenseController extends BaseController
     public function expenseUpdate(Request $request)
     {
         $inputs = $request->all();
+//        dd($inputs);
 
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',

@@ -109,10 +109,10 @@
                 </div>
                 <div class="form-group">
                     <label for="category">Funds flow </label>
-                    <select name="flow_id" id="category" class="form-control" style="width:250px">
+                    <select name="method_id" id="category" class="form-control" style="width:250px">
                         <option value="">--- Select Funds flow type ---</option>
-                        @foreach($flows as $key => $name)
-                            <option value="{{ $key }}">{{ $name }}</option>
+                        @foreach($paymentMethods as $paymentMethod)
+                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -150,10 +150,10 @@
                 </div>
                 <div class="form-group">
                     <label for="category">Funds flow </label>
-                    <select name="flow_id" id="category" class="form-control" style="width:250px">
-                        <option value="">--- Select Funds flow type ---</option>
-                        @foreach($flows as $key => $name)
-                            <option value="{{ $key }}">{{ $name }}</option>
+                    <select name="method_id" id="category" class="form-control" style="width:250px">
+                        <option value="">--- Select payment method ---</option>
+                        @foreach($paymentMethods as $paymentMethod)
+                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -182,11 +182,9 @@
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2" onclick="location.href = '{{ route('expense') }}';">
                 <i class="fas fa-columns mt-0"></i>
             </button>
-            <a href="" class="white-text mx-3">Balance: {{ $balance }}</a>
-            {{dd($flowsBalances)}}
-            @foreach($flowsBalances as $key => $flowsBalance)
-                {{dd($flowsBalances)}}
-                <a href="" class="white-text mx-3">Balance: {{ $flow }}</a>
+            <a href="" class="white-text mx-3">Total balance: {{ $totalBalance }}</a>
+            @foreach($paymentMethods as $paymentMethod)
+                <a href="" class="white-text mx-3">{{ $paymentMethod->name }}: {{ $paymentMethod->balance ? $paymentMethod->balance : 0}}</a>
             @endforeach
         </div>
 
@@ -223,7 +221,7 @@
                         </a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Funds flow type
+                        <a href="">Payment methods
                             <i class="fas fa-sort ml-1"></i>
                         </a>
                     </th>
@@ -244,7 +242,6 @@
                 <!--Table body-->
                 <tbody>
                 @foreach($incomes as $value)
-{{--                    {{ dd($value) }}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -252,7 +249,7 @@
                         </th>
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->from }}</td>
-                        <td>{{ $value->flow->name  }}</td>
+                        <td>{{ $value->paymentMethods->name  }}</td>
                         <td>{{ $value->amount }}</td>
                         <td>
                             <div style="display: flex">
@@ -301,10 +298,7 @@
 {{--                            </a>--}}
                         </td>
                         <td>
-                            <h5>Total amount: {{$total}}</h5>
-{{--                            <a href="">Total Amount: {{$total}}--}}
-
-{{--                            </a>--}}
+                            <h5>Total amount: {{$totalAmount}}</h5>
                         </td>
                         <td>
                             <a href="">Actions
