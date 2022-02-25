@@ -127,9 +127,9 @@
                     <small id="amountHelp" class="form-text text-muted">Numbers only</small>
                 </div>
                 <div class="form-group">
-                    <label for="category">Funds flow </label>
+                    <label for="category">Payment method</label>
                     <select name="method_id" id="category" class="form-control" style="width:250px">
-                        <option value="">--- Select Funds flow type ---</option>
+                        <option value="">--- Select payment method ---</option>
                         @foreach($paymentMethods as $paymentMethod)
                             <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
                         @endforeach
@@ -146,7 +146,7 @@
 <div id="myPencilModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Please enter incoming funds</h2>
+            <h2>Please change expense data</h2>
             <span class="pencil close">&times;</span>
         </div>
         <div class="modal-body">
@@ -166,15 +166,12 @@
                 <div class="form-group">
                     <label for="category">Categories: </label>
                     <select name="category_id" id="category" class="form-control" style="width:250px">
-                        <option value="">--- Select category ---</option>
-                        @foreach($categories as $key => $name)
-                            <option value="{{ $key }}">{{ $name }}</option>
-                        @endforeach
+                        <option value="" id="categoryOption"></option>
                     </select>
 
                     <label for="items">Items: </label>
                     <select name="item_id" id="item" class="form-control" style="width:250px">
-                        <option value="">--- Select item ---</option>
+                        <option value="" id="itemOption"></option>
                     </select>
                 </div>
 
@@ -185,16 +182,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="category">Funds flow </label>
-                    <select name="flow_id" id="category" class="form-control" style="width:250px">
-                        <option value="">--- Select Funds flow type ---</option>
-                        @foreach($paymentMethods as $paymentMethod)
-                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
-                        @endforeach
+                    <label for="category">Payment method</label>
+                    <select name="paymentMethod_id" id="category" class="form-control" style="width:250px">
+                        <option value="" id="changeOption"></option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Update income</button>
+                <button type="submit" class="btn btn-primary">Update expense</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closePencilBtn">Close</button>
             </form>
         </div>
@@ -223,9 +217,13 @@
 
         <a href="" class="white-text mx-3">Expense table</a>
 
-        <div>
+        <div style="display: flex">
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Create expense</button>
+            <button class="btn btn-primary" id="myBtn" style="margin-right: 5px">Create expense</button>
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <button class="btn btn-primary">Logout</button>
+            </form>
         </div>
 
 
@@ -270,12 +268,8 @@
                     </th>
                 </tr>
                 </thead>
-                <!--Table head-->
-{{--                {{dd($categories)}}--}}
-                <!--Table body-->
                 <tbody>
                 @foreach($expenses as $value)
-{{--                    {{dd($value)}}--}}
                     <tr>
                         <th scope="row">
                             <input class="form-check-input" type="checkbox" id="checkbox1">
@@ -283,10 +277,10 @@
                         </th>
                         <td>{{ $value->date }}</td>
                         <td>{{ $value->responsible_person }}</td>
-                        <td data-id="">{{ $value->category ? $value->category->name : null }}</td>
-                        <td>{{ $value->item ? $value->item->name : null }}</td>
+                        <td data-id="{{ $value->category ? $value->category->id : null  }}">{{ $value->category ? $value->category->name : null }}</td>
+                        <td data-id="{{ $value->item ? $value->item->id : null }}">{{ $value->item ? $value->item->name : null }}</td>
                         <td>{{ $value->amount }}</td>
-                        <td>{{ $value->paymentMethods->name  }}</td>
+                        <td data-id="{{ $value->paymentMethods->id }}">{{ $value->paymentMethods->name  }}</td>
                         <td>
                             <div style="display: flex">
                                 <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">
@@ -426,25 +420,27 @@
     $('.incomeUpdateButtons').click(function(){
         let date = $(this).parents('tr').find('td:eq(0)').text();
         let from = $(this).parents('tr').find('td:eq(1)').text();
-        let category = $(this).parents('tr').find('td:eq(2)').data('id');
+        let category = $(this).parents('tr').find('td:eq(2)').text();
+        let categoryId = $(this).parents('tr').find('td:eq(2)').attr('data-id');
         let item = $(this).parents('tr').find('td:eq(3)').text();
+        let itemId = $(this).parents('tr').find('td:eq(3)').attr('data-id');
         let amount = $(this).parents('tr').find('td:eq(4)').text();
-        let comments = $(this).parents('tr').find('td:eq(5)').text();
+        let paymentMethod = $(this).parents('tr').find('td:eq(5)').text();
+        let paymentMethodId = $(this).parents('tr').find('td:eq(5)').attr('data-id');
+
 
 
         $('#inputPencilId').val(this.id)
         $('#inputPencilDate').val(date)
         $('#inputPencilFrom').val(from)
-        // $('select[name="category_id"]').val(category)
         $('#inputPencilAmount').val(amount)
-        $('#inputPencilDescription').val(comments)
+        $('#categoryOption').text(category)
+        $('#categoryOption').val(categoryId)
+        $('#itemOption').text(item)
+        $('#itemOption').val(itemId)
+        $('#changeOption').text(paymentMethod)
+        $('#changeOption').val(paymentMethodId)
 
-
-        // let id = $(this).attr('id');
-        // let route = '';
-        //
-        // alert(route);
-        // alert(id);
     })
 </script>
 

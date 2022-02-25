@@ -15,7 +15,6 @@ class CreateExpensesTable extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-//            $table->unsignedbigInteger('user_id');
             $table->unsignedbigInteger('category_id');
             $table->unsignedbigInteger('paymentMethod_id');
             $table->unsignedBigInteger('item_id')->nullable();
@@ -24,8 +23,6 @@ class CreateExpensesTable extends Migration
             $table->double('amount');
             $table->string('receipt_photo')->nullable();
             $table->timestamps();
-
-//            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

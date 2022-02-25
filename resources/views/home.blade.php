@@ -23,35 +23,28 @@
 <body>
     <div class="jumbotron text-center">
         <h1>Axel company counts</h1>
-        <p>Resize this responsive page to see the effect!</p>
+        <form action="{{ route('logout') }}" method="post">
+            @csrf
+            <button class="">Logout</button>
+        </form>
     </div>
 
     <div class="container">
         <div class="row">
             <div class="col-sm-4">
                 <a href="{{route('income')}}"><h3>Incomes sheet</h3></a>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
             <div class="col-sm-4">
                 <a href="{{route('expense')}}"><h3>Expense sheet</h3></a>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
             <div class="col-sm-4">
                 <a href="{{route('balance')}}"><h3>Balance sheet</h3></a>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
             <div class="col-sm-4">
                 <a href="{{route('categories')}}"><h3>Categories</h3></a>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
             <div class="col-sm-4">
                 <a href="{{route('payment-methods')}}"><h3>Payment Methods</h3></a>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
             </div>
         </div>
     </div>

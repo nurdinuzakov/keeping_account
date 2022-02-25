@@ -52,7 +52,7 @@ class IncomeController extends BaseController
         $income = Income::create([
             'paymentMethod_id' => $inputs['method_id'],
             'date' => $inputs['date'],
-            'from' => $inputs['from'],
+            'responsible_person' => $inputs['from'],
             'amount' => $inputs['amount']
         ]);
 
@@ -109,7 +109,6 @@ class IncomeController extends BaseController
     public function incomeUpdate(Request $request)
     {
         $inputs = $request->all();
-//        dd($inputs);
 
         $validator = Validator::make($inputs,[
             'date'        => 'required|date',
@@ -127,7 +126,6 @@ class IncomeController extends BaseController
                                                     return $query->where('id', $inputs['inputPencilId'])
                                                         ->with('paymentHistory');
                                                 }])->first();
-        dd($incomeWithRelations);
 
         $paymentMethodBalance = $incomeWithRelations->balance;
         $income = $incomeWithRelations->incomes[0];
@@ -137,10 +135,10 @@ class IncomeController extends BaseController
 
         $incomeData = [
             'id' => $inputs['inputPencilId'],
-            'paymentMethod_id' => $inputs['method_id'],
-            'date'             => $inputs['date'],
-            'from'             => $inputs['from'],
-            'amount'           => $inputs['amount']
+            'paymentMethod_id'   => $inputs['method_id'],
+            'date'               => $inputs['date'],
+            'responsible_person' => $inputs['from'],
+            'amount'             => $inputs['amount']
         ];
 
         $income->update($incomeData);

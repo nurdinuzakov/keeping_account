@@ -22,9 +22,6 @@ class CreatePaymentHistoryTable extends Migration
             $table->float('amount');
             $table->float('balance_history');
             $table->timestamps();
-
-            //            $table->unsignedbigInteger('user_id');
-//            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

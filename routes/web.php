@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentMethodsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,37 +22,47 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::middleware(['auth'])->group(function () {
+    Route::middleware('isAdmin')->group(function (){
+        Route::post('/income-delete/{id}', [IncomeController::class, 'incomeDelete'])->name('income-delete');
+        Route::post('/income-update', [IncomeController::class, 'incomeUpdate'])->name('income-update');
+
+        Route::post('/expense-delete/{id}', [ExpenseController::class, 'expenseDelete'])->name('expense-delete');
+        Route::post('/expense-update', [ExpenseController::class, 'expenseUpdate'])->name('expense-update');
+
+
+    });
+    Route::get('/income', [IncomeController::class, 'income'])->name('income');
+    Route::post('/income-insert', [IncomeController::class, 'incomeInsert'])->name('income-insert');
+
+
+    Route::get('/expense', [ExpenseController::class, 'expense'])->name('expense');
+    Route::post('/expense-insert', [ExpenseController::class, 'expenseInsert'])->name('expense-insert');
+
+
+    Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
+
+    Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
+    Route::post('/category-create', [CategoryController::class, 'categoryCreate'])->name('category-create');
+    Route::post('/category-update', [CategoryController::class, 'categoryUpdate'])->name('category-update');
+    Route::post('/category-delete/{id}', [CategoryController::class, 'categoryDelete'])->name('category-delete');
+
+    Route::match(['get', 'post'], '/category-item/{id}', [CategoryItemController::class, 'categoryItem'])->name('category-item');
+    Route::post('/category-item-create/{id}', [CategoryItemController::class, 'createItem'])->name('create-item');
+    Route::post('/category-item-update', [CategoryItemController::class, 'updateItem'])->name('update-item');
+    Route::post('/category-item-delete/{id}', [CategoryItemController::class, 'categoryItemDelete'])->name('category-item-delete');
+
+    Route::get('/home', [HomeController::class, 'home'])->name('home');
+
+    Route::get('/payment-methods', [PaymentMethodsController::class, 'paymentMethods'])->name('payment-methods');
+    Route::post('/paymentMethod-create', [PaymentMethodsController::class, 'createPaymentMethods'])->name('create-payment-methods');
+    Route::post('/paymentMethod-delete{method}', [PaymentMethodsController::class, 'deletePaymentMethod'])->name('delete-payment-method');
+    Route::post('/paymentMethod-update', [PaymentMethodsController::class, 'updatePaymentMethod'])->name('update-payment-method');
+
+    Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
 });
 
-Route::get('/income', [IncomeController::class, 'income'])->name('income');
-Route::post('/income-insert', [IncomeController::class, 'incomeInsert'])->name('income-insert');
-Route::post('/income-delete/{id}', [IncomeController::class, 'incomeDelete'])->name('income-delete');
-Route::post('/income-update', [IncomeController::class, 'incomeUpdate'])->name('income-update');
+Auth::routes();
 
-Route::get('/expense', [ExpenseController::class, 'expense'])->name('expense');
-Route::post('/expense-insert', [ExpenseController::class, 'expenseInsert'])->name('expense-insert');
-Route::post('/expense-delete/{id}', [ExpenseController::class, 'expenseDelete'])->name('expense-delete');
-Route::post('/expense-update', [ExpenseController::class, 'expenseUpdate'])->name('expense-update');
-
-Route::get('/balance', [BalanceController::class, 'balance'])->name('balance');
-
-Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
-Route::post('/category-create', [CategoryController::class, 'categoryCreate'])->name('category-create');
-Route::post('/category-update', [CategoryController::class, 'categoryUpdate'])->name('category-update');
-Route::post('/category-delete/{id}', [CategoryController::class, 'categoryDelete'])->name('category-delete');
-
-Route::match(['get', 'post'], '/category-item/{id}', [CategoryItemController::class, 'categoryItem'])->name('category-item');
-Route::post('/category-item-create/{id}', [CategoryItemController::class, 'createItem'])->name('create-item');
-Route::post('/category-item-update', [CategoryItemController::class, 'updateItem'])->name('update-item');
-Route::post('/category-item-delete/{id}', [CategoryItemController::class, 'categoryItemDelete'])->name('category-item-delete');
-
-Route::get('/home', [HomeController::class, 'home'])->name('home');
-
-Route::get('/payment-methods', [PaymentMethodsController::class, 'paymentMethods'])->name('payment-methods');
-Route::post('/paymentMethod-create', [PaymentMethodsController::class, 'createPaymentMethods'])->name('create-payment-methods');
-Route::post('/paymentMethod-delete{method}', [PaymentMethodsController::class, 'deletePaymentMethod'])->name('delete-payment-method');
-Route::post('/paymentMethod-update', [PaymentMethodsController::class, 'updatePaymentMethod'])->name('update-payment-method');
-
-Route::get('/get-categories/getitems/{id}', [DataController::class, 'getItems'])->name('get-items');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

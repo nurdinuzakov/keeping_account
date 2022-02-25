@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use ShiftOneLabs\LaravelCascadeDeletes\CascadesDeletes;
 
 class Expense extends Model
 {
     use HasFactory;
+    use CascadesDeletes;
 
     protected $table = 'expenses';
 
     protected $guarded = ['id'];
+
+    protected $cascadeDeletes = ['paymentHistory'];
 
     public function user()
     {

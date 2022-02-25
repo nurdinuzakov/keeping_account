@@ -91,23 +91,6 @@ class ExpenseController extends BaseController
 
 
         return redirect()->route('expense');
-
-        dd($paymentHistory);
-
-
-
-//        $expenseAmount = $expense->pluck('expense_amount');
-//        $expenseTotal = $expenseAmount->sum();
-//
-//        $income = Income::pluck('amount');
-//        $incomeTotal = $income->sum();
-//
-//        $balance = $incomeTotal-$expenseTotal;
-//
-//
-//        $recordBalance = PaymentHistory::create(['expense_id' => $expense[0]->id, 'date' => $inputs['date'], 'balance' => $balance]);
-
-        return redirect()->route('expense', ['expense' => $expense, 'balance' => $recordBalance]);
     }
 
     public function expenseDelete($id)
@@ -115,17 +98,20 @@ class ExpenseController extends BaseController
         $expense = Expense::find($id);
         if (!$expense)
         {
-            return $this->sendError(['message' => 'Expense with this id was not found'],422);
+            return $this->sendError(['message' => 'Income with this id was not found'],422);
         }
-        $balances = PaymentHistory::get();
-        $latestBalance = $balances->last();
-        $balance = $latestBalance->balance + $expense->expense_amount;
-        $expense->delete();
-        $expense->get();
-        $date = new \DateTime();
-        $newBalance = PaymentHistory::create(['date' => $date, 'balance' => $balance]);
 
-        return redirect()->route('expense', ['expense' => $expense, 'balance' => $newBalance]);
+        $expenseAmount = $expense->amount;
+        $paymentMethod_id = $expense->paymentMethod_id;
+        $paymentMethod = PaymentMethods::find($paymentMethod_id);
+        $paymentMethodBalance = $paymentMethod->balance;
+        $newPaymentMethodBalance = $paymentMethodBalance + $expenseAmount;
+        $paymentMethod->balance = $newPaymentMethodBalance;
+        $paymentMethod->save();
+
+        $expense->delete();
+
+        return redirect()->route('expense');
     }
 
     public function expenseUpdate(Request $request)
@@ -137,7 +123,7 @@ class ExpenseController extends BaseController
             'date'        => 'required|date',
             'from'        => 'required|string',
             'category_id' => 'required|numeric',
-            'flow_id'        => 'required|numeric',
+            'paymentMethod_id' => 'required|numeric',
             'amount'      => 'required|numeric'
         ]);
 
@@ -145,28 +131,42 @@ class ExpenseController extends BaseController
             return $this->sendError($validator->errors()->first(),422);
         }
 
-        $expenses = Expense::with('balance');
-        $expense = $expenses->find($inputs['inputPencilId']);
+        $paymentMethod = PaymentMethods::find($inputs['paymentMethod_id']);
+        $expenseWithHistory = Expense::find($inputs['inputPencilId'])->with('paymentHistory')->first();
+        $paymentHistory = $expenseWithHistory->paymentHistory;
+        $oldExpence = $expenseWithHistory->amount;
+        $paymentMethodBalance = $paymentMethod->balance;
 
-        $oldBalance = $expense->balance->balance;
-        $oldExpence = $expense->expense_amount;
-        $originalBalance = $oldBalance + $oldExpence;
-        $newBalance = $originalBalance - $inputs['amount'];
-        $balance = PaymentHistory::where('expense_id', $inputs['inputPencilId'])->first();
-        $balance->balance=$newBalance;
-        $balance->save();
-        $dataSend = $balance->balance;
+        $oldBalance = $paymentMethodBalance + $oldExpence;
+        $newBalance = $oldBalance - $inputs['amount'];
+
+        $expenseData = [
+            'category_id'         => $inputs['category_id'],
+            'paymentMethod_id'    => $inputs['paymentMethod_id'],
+            'item_id'             => $inputs['item_id'],
+            'date'                => $inputs['date'],
+            'responsible_person'  => $inputs['from'],
+            'amount'              => $inputs['amount']
+        ];
 
 
-        $expense->category_id = $inputs['category_id'];
-        $expense->item_id = $inputs['item_id'];
-        $expense->date = $inputs['date'];
-        $expense->responsible_person = $inputs['from'];
-        $expense->expense_amount = $inputs['amount'];
-        $expense->flow_id = $inputs['flow_id'];
-        $expense->save();
+        $expenseWithHistory->update($expenseData);
 
-        $expense->get();
-        return redirect()->route('expense', ['expense' => $expense, 'balance' => $dataSend]);
+        $paymentHistoryData = [
+            'balanceable_id'   => $inputs['inputPencilId'],
+            'balanceable_type' => 'App\Models\Expense',
+            'payment_id'       => $inputs['paymentMethod_id'],
+            'date'             => $inputs['date'],
+            'amount'           => $inputs['amount'],
+            'balance_history'  => $newBalance
+        ];
+
+
+        $paymentHistory->update($paymentHistoryData);
+
+        $paymentMethod->balance = $newBalance;
+        $paymentMethod->save();
+
+        return redirect()->route('expense');
     }
 }

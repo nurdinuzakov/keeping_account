@@ -144,13 +144,20 @@
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
                 <i class="fas fa-columns mt-0"></i>
             </button>
+            <a href="" class="white-text mx-3">Total balance: {{ $totalBalance }}</a>
+            @foreach($paymentMethods as $paymentMethod)
+                <a href="" class="white-text mx-3">{{ $paymentMethod->name }}: {{ $paymentMethod->balance ? $paymentMethod->balance : 0}}</a>
+            @endforeach
         </div>
 
         <a href="" class="white-text mx-3">Balance table</a>
 
         <div>
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Count the balance</button>
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <button class="btn btn-primary">Logout</button>
+            </form>
         </div>
     </div>
     <!--/Card image-->
@@ -165,19 +172,22 @@
                 <thead>
                 <tr>
                     <th class="th-lg">
-                        <a>Category Id
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a>Payment type</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Category name
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Date</a>
                     </th>
                     <th class="th-lg">
-                        <a href="">Actions
-                            <i class="fas fa-sort ml-1"></i>
-                        </a>
+                        <a href="">Payment method</a>
+                    </th>
+                    <th class="th-lg">
+                        <a href="">Responsible person</a>
+                    </th>
+                    <th class="th-lg">
+                        <a href="">Amount</a>
+                    </th>
+                    <th class="th-lg">
+                        <a href="">Balance history</a>
                     </th>
                 </tr>
                 </thead>
@@ -185,28 +195,17 @@
 
                 <!--Table body-->
                 <tbody>
-{{--                @foreach($categories as $value)--}}
-{{--                    <tr>--}}
-{{--                        <td>{{ $value->id }}</td>--}}
-{{--                        <form action="{{ route('category-item', $value->id) }}" method="post">--}}
-{{--                            @csrf--}}
-{{--                            <td><button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2"><a><h4>{{ $value->name }}</h4></a></button></td>--}}
-{{--                        </form>--}}
-{{--                        <td>--}}
-{{--                            <div style="display: flex">--}}
-{{--                                <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeUpdateButtons" id="{{$value->id}}">--}}
-{{--                                    <i class="fas fa-pencil-alt mt-0"></i>--}}
-{{--                                </button>--}}
-{{--                                <form action="{{ route('category-delete', $value->id) }}" method="post">--}}
-{{--                                    @csrf--}}
-{{--                                    <button type="submit" class="btn btn-outline-white btn-rounded btn-sm px-2 incomeDeleteButtons" onclick="myFunction()" id="{{$value->id}}">--}}
-{{--                                        <i class="far fa-trash-alt mt-0"></i>--}}
-{{--                                    </button>--}}
-{{--                                </form>--}}
-{{--                            </div>--}}
-{{--                        </td>--}}
-{{--                    </tr>--}}
-{{--                @endforeach--}}
+                @foreach($paymentHistory as $value)
+                    <tr>
+                        <td>{{ $value->balanceable_type }}</td>
+                        <td>{{ $value->date }}</td>
+                        <td>{{ $value->balanceable->paymentMethods->name}}</td>
+                        <td>{{ $value->balanceable->responsible_person }}</td>
+                        <td>{{ $value->amount }}</td>
+                        <td>{{ $value->balance_history }}</td>
+
+                    </tr>
+                @endforeach
                 </tbody>
                 <!--Table body-->
                 <tfoot>
@@ -216,11 +215,11 @@
                     </td>
                     <td>
                         <div class="pagination-wrapper">
-{{--                            {{ $categories->links() }}--}}
+                            {{ $paymentHistory->links() }}
                         </div>
                     </td>
                     <td>
-                        <a href="">Actions</a>
+
                     </td>
                 </tr>
                 </tfoot>

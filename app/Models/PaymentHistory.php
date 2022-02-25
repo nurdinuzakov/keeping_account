@@ -26,7 +26,7 @@ class PaymentHistory extends Model
 
     public function expense()
     {
-        return $this->belongsTo(Expense::class);
+        return $this->belongsTo(Expense::class,'');
     }
 
     public function balanceable()

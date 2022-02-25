@@ -144,6 +144,8 @@
             <button type="button" class="btn btn-outline-white btn-rounded btn-sm px-2">
                 <i class="fas fa-columns mt-0"></i>
             </button>
+            <a href="{{ route('income') }}" class="white-text mx-3">Income table</a>
+            <a href="{{ route('expense') }}" class="white-text mx-3">Expense table</a>
         </div>
 
         <a href="" class="white-text mx-3">Payment Methods table</a>

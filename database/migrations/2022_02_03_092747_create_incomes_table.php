@@ -17,7 +17,7 @@ class CreateIncomesTable extends Migration
             $table->id();
             $table->unsignedbigInteger('paymentMethod_id');
             $table->date('date');
-            $table->string('from');
+            $table->string('responsible_person');
             $table->double('amount');
             $table->timestamps();
         });

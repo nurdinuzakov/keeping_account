@@ -151,10 +151,7 @@
                 <div class="form-group">
                     <label for="category">Funds flow </label>
                     <select name="method_id" id="category" class="form-control" style="width:250px">
-                        <option value="">--- Select payment method ---</option>
-                        @foreach($paymentMethods as $paymentMethod)
-                            <option value="{{ $paymentMethod->id }}">{{ $paymentMethod->name }}</option>
-                        @endforeach
+                        <option value="" id="changeOption"></option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -190,9 +187,13 @@
 
         <h3 href="" class="white-text mx-3">Income table</h3>
 
-        <div>
+        <div style="display: flex">
             <!-- Trigger/Open The Modal -->
-            <button class="btn btn-primary" id="myBtn">Create income</button>
+            <button class="btn btn-primary" style="margin-right: 5px" id="myBtn">Create income</button>
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <button class="btn btn-primary">Logout</button>
+            </form>
         </div>
     </div>
     <!--/Card image-->
@@ -248,8 +249,8 @@
                             <label class="form-check-label" for="checkbox1" class="label-table"></label>
                         </th>
                         <td>{{ $value->date }}</td>
-                        <td>{{ $value->from }}</td>
-                        <td>{{ $value->paymentMethods->name  }}</td>
+                        <td>{{ $value->responsible_person }}</td>
+                        <td data-id="{{ $value->paymentMethods->id }}">{{ $value->paymentMethods->name  }}</td>
                         <td>{{ $value->amount }}</td>
                         <td>
                             <div style="display: flex">
@@ -392,20 +393,18 @@
     $('.incomeUpdateButtons').click(function(){
         let date = $(this).parents('tr').find('td:eq(0)').text();
         let from = $(this).parents('tr').find('td:eq(1)').text();
-        let description = $(this).parents('tr').find('td:eq(2)').text();
+        let paymentMethod = $(this).parents('tr').find('td:eq(2)').text();
+        let paymentMethodId = $(this).parents('tr').find('td:eq(2)').attr('data-id');
         let amount = $(this).parents('tr').find('td:eq(3)').text();
+
 
         $('#inputPencilId').val(this.id)
         $('#inputPencilDate').val(date)
         $('#inputPencilFrom').val(from)
-        $('#inputPencilDescription').val(description)
+        $('#changeOption').text(paymentMethod)
+        $('#changeOption').val(paymentMethodId)
         $('#inputPencilAmount').val(amount)
 
-        // let id = $(this).attr('id');
-        // let route = '';
-        //
-        // alert(route);
-        // alert(id);
     })
 </script>
 
